@@ -103,6 +103,17 @@ UBRR Formula(U2X=1): UBRR = (f_osc / 8*BAUR_RATE)-1
 		/*not enough .data size. not used end*/
 #define	RX_END_WORD	'\0'
 #define	TX_END_WORD	'\0'
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define SEND_IS_DONE	(1 << UDRE)
+
+#define SEND_COMMON()	\
+{	\
+	UDR0 = '\r';	\
+	while (!(UCSR0A & SEND_IS_DONE));	\
+	UDR0 = '\n';	\
+	while (!(UCSR0A & SEND_IS_DONE));	\
+	UDR0 = '\0';	\
+	while (!(UCSR0A & SEND_IS_DONE));	\
+}
 
 #endif
