@@ -31,9 +31,6 @@ char buffer[STRING_BUFFER_SIZE];
 unsigned char SWITCH=0;
 unsigned char testFlag = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define TOKEN_PASTER(x, y)				(x##y)
-
-
 #define INPUT							0x00	
 #define OUTPUT							0xFF
 
