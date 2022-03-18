@@ -49,6 +49,13 @@ unsigned char testFlag = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//SET PORT, WHICH IS USED OUTPUT
+#define GLCD_CONTROL_BUS					PORTA
+#define GLCD_CONTROL_BUS_DDR				DDRA
+#define GLCD_DATA_BUS_OUTPUT				PORTC
+#define GLCD_DATA_BUS_INPUT					PINC
+#define GLCD_DATA_BUS_DDR					DDRC
+
 /*
 	GLCD	LG128643-FMDWH6V
 	Description
@@ -85,13 +92,6 @@ unsigned char testFlag = 0;
 #define GLCD_BIT_POSITION_E						6//when read data, H. when write data, H -> L 
 #define GLCD_BIT_POSITION_RW					3//H read. L write.
 #define GLCD_BIT_POSITION_RS					4//display on/off. H display, L Instruction Mode.
-
-//SET PORT, WHICH IS USED OUTPUT
-#define GLCD_CONTROL_BUS					PORTA
-#define GLCD_CONTROL_BUS_DDR				DDRA
-#define GLCD_DATA_BUS_OUTPUT				PORTC
-#define GLCD_DATA_BUS_INPUT					PINC
-#define GLCD_DATA_BUS_DDR					DDRC
 
 //LCD
 #define BOTH_SIDE_BLANK					0x00
