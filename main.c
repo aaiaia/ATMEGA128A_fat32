@@ -25,7 +25,7 @@ struct stringBuffer
 
 stringBuffer commonStringBuffer;
 
-char buffer[STRING_BUFFER_SIZE];
+char g_glcdBuf[STRING_BUFFER_SIZE];
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 unsigned char SWITCH=0;
@@ -680,8 +680,8 @@ Return Value: None
 	// {
 		// putStringInGlcdAtPage(PAGE1, "      Welcome to  ");
 		// putStringInGlcdAtPage(PAGE2,"    EOD Data Logger");
-			// sprintf(buffer,"20%s %s",line1,line2);
-		// putStringInGlcdAtPage(PAGE4,buffer);
+			// sprintf(g_glcdBuf,"20%s %s",line1,line2);
+		// putStringInGlcdAtPage(PAGE4,g_glcdBuf);
 		// putStringInGlcdAtPage(PAGE5, "   ver.1.01 Activated");
 		// putStringInGlcdAtPage(PAGE3, "                   ");
 		// putStringInGlcdAtPage(PAGE6, "                   ");
@@ -689,7 +689,7 @@ Return Value: None
 		// putStringInGlcdAtPage(PAGE8, "     fin fo tech  ");
 		// _delay_ms(50);
 		// resetGlcd();
-		// buffer[5]++;
+		// g_glcdBuf[5]++;
 		// _delay_ms(1000);
 	// }
 	
@@ -764,24 +764,24 @@ void displayDs1302ReadTime()
 {
 	unsigned char temp;
 	temp = ds1302_read(ds1302_year_add);
-	sprintf(buffer, "Date=%d", (((0xF0&temp)>>4)*10)+(0x0F&temp));
+	sprintf(g_glcdBuf, "Date=%d", (((0xF0&temp)>>4)*10)+(0x0F&temp));
 	
 	temp = ds1302_read(ds1302_month_add);
-	sprintf(buffer, "%s/%d", buffer, (((0xF0&temp)>>4)*10)+(0x0F&temp));
+	sprintf(g_glcdBuf, "%s/%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 
 	temp = ds1302_read(ds1302_date_add);
-	sprintf(buffer, "%s/%d,", buffer, (((0xF0&temp)>>4)*10)+(0x0F&temp));	
+	sprintf(g_glcdBuf, "%s/%d,", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));	
 
 	temp = ds1302_read(ds1302_hr_add);
-	sprintf(buffer, "%s%d", buffer, (((0xF0&temp)>>4)*10)+(0x0F&temp));
+	sprintf(g_glcdBuf, "%s%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 	
 	temp = ds1302_read(ds1302_min_add);
-	sprintf(buffer, "%s:%d", buffer, (((0xF0&temp)>>4)*10)+(0x0F&temp));
+	sprintf(g_glcdBuf, "%s:%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 
 	temp = ds1302_read(ds1302_sec_add);
-	sprintf(buffer, "%s:%d", buffer, (((0xF0&temp)>>4)*10)+(0x0F&temp));
+	sprintf(g_glcdBuf, "%s:%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 
-	putStringInGlcdAtPage(PAGE1, buffer);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1035,22 +1035,22 @@ unsigned int getAdcValue(unsigned char spiDeviceNumber, unsigned char numberOfPo
 ////////////////////////////// SD CARD //////////////////////////////
 	/*Invalid CMD response test code start*/
 	/*
-		sprintf(buffer ,"invalied CMD response");
-		putStringInGlcdAtPage(PAGE1, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE2, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE3, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE4, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE5, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE6, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE7, buffer);
-		sprintf(buffer ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
-		putStringInGlcdAtPage(PAGE8, buffer);
+		sprintf(g_glcdBuf ,"invalied CMD response");
+		putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE2, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE4, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE5, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE7, g_glcdBuf);
+		sprintf(g_glcdBuf ,"0x%02x%02x%02x%02x %02x%02x%02x%02x", spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive(), spiReceive());
+		putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																										nextSequence();
 	*/
 	/*Invalid CMD response test code end*/
@@ -1565,8 +1565,8 @@ void testGlcdHexPrint(SD_RW_Data *p, unsigned int bytes, unsigned char mode)
 	unsigned char line = 0;
 
 
-	sprintf(buffer, "P.S.N %000000008lx", (*p).physicalSectorNumber);
-	putStringInGlcdAtPage(PAGE(page++), buffer);
+	sprintf(g_glcdBuf, "P.S.N %000000008lx", (*p).physicalSectorNumber);
+	putStringInGlcdAtPage(PAGE(page++), g_glcdBuf);
 
 	for(line=0; ((line<bytes)&&(line<sizeof((*p).data))); line++)
 	{
@@ -1582,26 +1582,26 @@ void testGlcdHexPrint(SD_RW_Data *p, unsigned int bytes, unsigned char mode)
 			//page = 4;
 			page = 5;
 		}
-			sprintf(buffer, "%02x", *i);
+			sprintf(g_glcdBuf, "%02x", *i);
 			i++;
-			sprintf(buffer ,"%s%02x", buffer, *i);
+			sprintf(g_glcdBuf ,"%s%02x", g_glcdBuf, *i);
 			i++;
-			sprintf(buffer ,"%s%02x", buffer, *i);
+			sprintf(g_glcdBuf ,"%s%02x", g_glcdBuf, *i);
 			i++;
-			sprintf(buffer ,"%s%02x", buffer, *i);
-			i++;
-
-			sprintf(buffer ,"%s %02x", buffer, *i);
-			i++;
-			sprintf(buffer ,"%s%02x", buffer, *i);
-			i++;
-			sprintf(buffer ,"%s%02x", buffer, *i);
-			i++;
-			sprintf(buffer ,"%s%02x %03d", buffer, *i, line);
+			sprintf(g_glcdBuf ,"%s%02x", g_glcdBuf, *i);
 			i++;
 
-//			sprintf(buffer, "%02x%02x %02x%02x%02x%02x", *i++, *i++, *i++, *i++, *i++, *i++, *i++, *i++);//8bit
-			putStringInGlcdAtPage(PAGE(page++), buffer);
+			sprintf(g_glcdBuf ,"%s %02x", g_glcdBuf, *i);
+			i++;
+			sprintf(g_glcdBuf ,"%s%02x", g_glcdBuf, *i);
+			i++;
+			sprintf(g_glcdBuf ,"%s%02x", g_glcdBuf, *i);
+			i++;
+			sprintf(g_glcdBuf ,"%s%02x %03d", g_glcdBuf, *i, line);
+			i++;
+
+//			sprintf(g_glcdBuf, "%02x%02x %02x%02x%02x%02x", *i++, *i++, *i++, *i++, *i++, *i++, *i++, *i++);//8bit
+			putStringInGlcdAtPage(PAGE(page++), g_glcdBuf);
 	}
 	while(page < 9)
 	{
@@ -1617,24 +1617,24 @@ void testGlcdHexPrint(SD_RW_Data *p, unsigned int bytes, unsigned char mode)
 void testSdCardTracer(char *title, unsigned char times)
 {
 	unsigned char i,j;
-	sprintf(buffer, "%s", title);
-	putStringInGlcdAtPage(PAGE1, buffer);
+	sprintf(g_glcdBuf, "%s", title);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
 	for(i=0; i<times; i++)
 	{
 		for(j=0; j<7; j++)
 		{
-		sprintf(buffer, "%02x", spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		sprintf(buffer, "%s%02x",buffer, spiReceive());
-		putStringInGlcdAtPage(PAGE0+1+j, buffer);
+		sprintf(g_glcdBuf, "%02x", spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		sprintf(g_glcdBuf, "%s%02x",g_glcdBuf, spiReceive());
+		putStringInGlcdAtPage(PAGE0+1+j, g_glcdBuf);
 		}
 		nextSequence();
 	}
@@ -1899,65 +1899,65 @@ void findBootSecter(fat32Info *diskInfo, SD_RW_Data *target)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void displayFAT32Info(fat32Info *p)
 {
-	sprintf(buffer ,"FileType:%s", (*p).fileSystemType);
-	putStringInGlcdAtPage(PAGE1, buffer);
-	sprintf(buffer ,"Bytes/Sector");
-	putStringInGlcdAtPage(PAGE2, buffer);
-	sprintf(buffer ,"0d%d 0x%x", (*p).bytesPerSecter, (*p).bytesPerSecter);
-	putStringInGlcdAtPage(PAGE3, buffer);
-	sprintf(buffer ,"Sector/Clustor");
-	putStringInGlcdAtPage(PAGE4, buffer);
-	sprintf(buffer ,"0d%d 0x%x", (*p).secterPerClustor, (*p).secterPerClustor);
-	putStringInGlcdAtPage(PAGE5, buffer);
+	sprintf(g_glcdBuf ,"FileType:%s", (*p).fileSystemType);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+	sprintf(g_glcdBuf ,"Bytes/Sector");
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%d 0x%x", (*p).bytesPerSecter, (*p).bytesPerSecter);
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+	sprintf(g_glcdBuf ,"Sector/Clustor");
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%d 0x%x", (*p).secterPerClustor, (*p).secterPerClustor);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-	sprintf(buffer ,"Reserved Sector");
-	putStringInGlcdAtPage(PAGE6, buffer);
-	sprintf(buffer ,"0d%d 0x%x", (*p).reservedSectorCount, (*p).reservedSectorCount);
-	putStringInGlcdAtPage(PAGE7, buffer);
+	sprintf(g_glcdBuf ,"Reserved Sector");
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%d 0x%x", (*p).reservedSectorCount, (*p).reservedSectorCount);
+	putStringInGlcdAtPage(PAGE7, g_glcdBuf);
 
-	sprintf(buffer ,"NumFats 0x%x", (*p).numberOfFATs);
-	putStringInGlcdAtPage(PAGE8, buffer);
+	sprintf(g_glcdBuf ,"NumFats 0x%x", (*p).numberOfFATs);
+	putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 
 	nextSequence();
 
-	sprintf(buffer ,"Hidden Sector");
-	putStringInGlcdAtPage(PAGE1, buffer);
-	sprintf(buffer ,"0d%ld 0x%lx", (*p).hiddenSector, (*p).hiddenSector);
-	putStringInGlcdAtPage(PAGE2, buffer);
-	sprintf(buffer ,"Total Sector");
-	putStringInGlcdAtPage(PAGE3, buffer);
-	sprintf(buffer ,"0d%ld", (*p).totalSector);
-	putStringInGlcdAtPage(PAGE4, buffer);
-	sprintf(buffer ,"0x%lx", (*p).totalSector);
-	putStringInGlcdAtPage(PAGE5, buffer);
-	sprintf(buffer ,"FAT occpied secter");
-	putStringInGlcdAtPage(PAGE6, buffer);
-	sprintf(buffer ,"0d%ld", (*p).FATSz32);
-	putStringInGlcdAtPage(PAGE7, buffer);
-	sprintf(buffer ,"0x%lx", (*p).FATSz32);
-	putStringInGlcdAtPage(PAGE8, buffer);
+	sprintf(g_glcdBuf ,"Hidden Sector");
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%ld 0x%lx", (*p).hiddenSector, (*p).hiddenSector);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
+	sprintf(g_glcdBuf ,"Total Sector");
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%ld", (*p).totalSector);
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0x%lx", (*p).totalSector);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
+	sprintf(g_glcdBuf ,"FAT occpied secter");
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%ld", (*p).FATSz32);
+	putStringInGlcdAtPage(PAGE7, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0x%lx", (*p).FATSz32);
+	putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 
 	nextSequence();
 
 	resetGlcd();
-	sprintf(buffer ,"Root Clustor");
-	putStringInGlcdAtPage(PAGE1, buffer);
-	sprintf(buffer ,"0x%lx", (*p).rootClustor);
-	putStringInGlcdAtPage(PAGE2, buffer);
+	sprintf(g_glcdBuf ,"Root Clustor");
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0x%lx", (*p).rootClustor);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-	sprintf(buffer ,"FAT secter");
-	putStringInGlcdAtPage(PAGE3, buffer);
-	sprintf(buffer, "0x%lx 0x%lx", (*p).FATPhysicalSector[0], (*p).FATPhysicalSector[1]);
-	putStringInGlcdAtPage(PAGE4, buffer);
+	sprintf(g_glcdBuf ,"FAT secter");
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+	sprintf(g_glcdBuf, "0x%lx 0x%lx", (*p).FATPhysicalSector[0], (*p).FATPhysicalSector[1]);
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 
-	sprintf(buffer ,"Root directory");
-	putStringInGlcdAtPage(PAGE5, buffer);
-	sprintf(buffer ,"Sector Offset");
-	putStringInGlcdAtPage(PAGE6, buffer);
-	sprintf(buffer ,"0d%ld", (*p).rootDirectoryPhysicalSector);
-	putStringInGlcdAtPage(PAGE7, buffer);
-	sprintf(buffer ,"0x%lx", (*p).rootDirectoryPhysicalSector);
-	putStringInGlcdAtPage(PAGE8, buffer);
+	sprintf(g_glcdBuf ,"Root directory");
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
+	sprintf(g_glcdBuf ,"Sector Offset");
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0d%ld", (*p).rootDirectoryPhysicalSector);
+	putStringInGlcdAtPage(PAGE7, g_glcdBuf);
+	sprintf(g_glcdBuf ,"0x%lx", (*p).rootDirectoryPhysicalSector);
+	putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 	nextSequence();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1966,8 +1966,8 @@ void displayFAT32Info(fat32Info *p)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char addSdCardBuffer(char *str, SD_RW_Data *p)
 {
-	sprintf(buffer ,"SL %d", sizeof((*p).data)/sizeof(char) );
-	putStringInGlcdAtPage(PAGE3, buffer);
+	sprintf(g_glcdBuf ,"SL %d", sizeof((*p).data)/sizeof(char) );
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 	if( ( (*p).MSB + strlen(str) ) <= ( (*p).data + sizeof((*p).data)/sizeof(char) ) )
 	{
 		strcpy((*p).MSB, str);
@@ -1982,8 +1982,8 @@ char addSdCardBuffer(char *str, SD_RW_Data *p)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char inputSdCardBuffer(char *str, SD_RW_Data *p)
 {
-	sprintf(buffer ,"SL %d", strlen(str));
-	putStringInGlcdAtPage(PAGE2, buffer);
+	sprintf(g_glcdBuf ,"SL %d", strlen(str));
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 	memset(p, 0x00, sizeof(SD_RW_Data));
 	(*p).MSB = (*p).data;
 	return addSdCardBuffer(str, p);
@@ -3113,23 +3113,23 @@ char abstractDirLongNameFromDirectoryEntry(char *dirEntry, char *longName)//if l
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void testDirStructurePrint(directoryStructure *p)
 {
-	sprintf(buffer, "%s", (*p).dirName.fullName);
-	putStringInGlcdAtPage(PAGE1, buffer);
+	sprintf(g_glcdBuf, "%s", (*p).dirName.fullName);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
-	sprintf(buffer, "%s %s", (*p).dirName.simple, (*p).dirName.extension);
-	putStringInGlcdAtPage(PAGE2, buffer);
+	sprintf(g_glcdBuf, "%s %s", (*p).dirName.simple, (*p).dirName.extension);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-	sprintf(buffer, "Attr 0x%02x", (*p).otherInfo.attribute);
-	putStringInGlcdAtPage(PAGE3, buffer);
+	sprintf(g_glcdBuf, "Attr 0x%02x", (*p).otherInfo.attribute);
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 
-	sprintf(buffer, "Indicate First Clustor");
-	putStringInGlcdAtPage(PAGE4, buffer);
+	sprintf(g_glcdBuf, "Indicate First Clustor");
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 
-	sprintf(buffer, "0x%000000008lx", (*p).otherInfo.indicateFirstClustor);
-	putStringInGlcdAtPage(PAGE5, buffer);
+	sprintf(g_glcdBuf, "0x%000000008lx", (*p).otherInfo.indicateFirstClustor);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-	sprintf(buffer, "Size %ld", (*p).otherInfo.fileSize);
-	putStringInGlcdAtPage(PAGE6, buffer);
+	sprintf(g_glcdBuf, "Size %ld", (*p).otherInfo.fileSize);
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
 	putStringInGlcdAtPage(PAGE7, "                       ");
 	putStringInGlcdAtPage(PAGE8, "                       ");
 																					nextSequence();
@@ -3420,26 +3420,26 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 	
 
 	resetGlcd();
-	sprintf(buffer, "indicate 0x%lx", (*findDirEntry).dirStructure.otherInfo.indicateFirstClustor);
-	putStringInGlcdAtPage(PAGE1, buffer);
+	sprintf(g_glcdBuf, "indicate 0x%lx", (*findDirEntry).dirStructure.otherInfo.indicateFirstClustor);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
-	sprintf(buffer, "Entry No 0x%x", (*findDirEntry).entryInfo.entryNumberOrOffset);
-	putStringInGlcdAtPage(PAGE2, buffer);
+	sprintf(g_glcdBuf, "Entry No 0x%x", (*findDirEntry).entryInfo.entryNumberOrOffset);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-	sprintf(buffer, "clustor 0x%lx", (*findDirEntry).entryInfo.location.clustor);
-	putStringInGlcdAtPage(PAGE3, buffer);
+	sprintf(g_glcdBuf, "clustor 0x%lx", (*findDirEntry).entryInfo.location.clustor);
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 
-	sprintf(buffer, "secterInC. 0d%d", (*findDirEntry).entryInfo.location.secterInClustor);
-	putStringInGlcdAtPage(PAGE4, buffer);
+	sprintf(g_glcdBuf, "secterInC. 0d%d", (*findDirEntry).entryInfo.location.secterInClustor);
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 
-	sprintf(buffer, "size 0x%lx", (*findDirEntry).dirStructure.otherInfo.fileSize);
-	putStringInGlcdAtPage(PAGE5, buffer);
+	sprintf(g_glcdBuf, "size 0x%lx", (*findDirEntry).dirStructure.otherInfo.fileSize);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-	sprintf(buffer, "attribute 0x%x", (*findDirEntry).dirStructure.otherInfo.attribute);
-	putStringInGlcdAtPage(PAGE6, buffer);
+	sprintf(g_glcdBuf, "attribute 0x%x", (*findDirEntry).dirStructure.otherInfo.attribute);
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
 
-	sprintf(buffer ,"%s", stringTemp);
-	putStringInGlcdAtPage(PAGE7, buffer);
+	sprintf(g_glcdBuf ,"%s", stringTemp);
+	putStringInGlcdAtPage(PAGE7, g_glcdBuf);
 																					nextSequence();
 
 */
@@ -4055,13 +4055,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 																					
 																					
@@ -4073,13 +4073,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 																					
 																					
@@ -4092,13 +4092,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 																					
 																					
@@ -4111,13 +4111,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();																					
 																					
 																					
@@ -4129,13 +4129,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 																					
 																					
@@ -4147,13 +4147,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 																					
 																					
@@ -4165,13 +4165,13 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 
 	
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
-																					sprintf(buffer ,"result:%d", resultBuffer);
-																					putStringInGlcdAtPage(PAGE8, buffer);
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
 */
 char findDirEntryUsingName(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *dirEntryInfo, CLUSTOR_LOCATION locateClustor, char *targetName)//indicateFirstClustor 
@@ -4556,38 +4556,38 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 
 												if( strlen(fileBrowserData.findEntry.dirStructure.dirName.fullName) != 0 )
 												{
-													sprintf(buffer ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
+													sprintf(g_glcdBuf ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
 												}
 												else
 												{
-													sprintf(buffer ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
+													sprintf(g_glcdBuf ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
 												}
-												putStringInGlcdAtPage(PAGE1, buffer);
+												putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 												
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(buffer ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");		
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(buffer ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");		
 												}
 												else
 												{
-													sprintf(buffer ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
+													sprintf(g_glcdBuf ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
 												}
-												putStringInGlcdAtPage(PAGE2, buffer);
+												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
 												
-												sprintf(buffer ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
-												putStringInGlcdAtPage(PAGE3, buffer);
+												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
+												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 												
-												sprintf(buffer ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
-												putStringInGlcdAtPage(PAGE4, buffer);
+												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
+												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 												
 												
-												sprintf(buffer ,"%d", resultBuffer);
-												putStringInGlcdAtPage(PAGE8, buffer);
+												sprintf(g_glcdBuf ,"%d", resultBuffer);
+												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
 
 																						
@@ -4598,38 +4598,38 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 
 																						if( strlen(fileBrowserData.findEntry.dirStructure.dirName.fullName) != 0 )
 												{
-													sprintf(buffer ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
+													sprintf(g_glcdBuf ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
 												}
 												else
 												{
-													sprintf(buffer ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
+													sprintf(g_glcdBuf ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
 												}
-												putStringInGlcdAtPage(PAGE1, buffer);
+												putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 												
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(buffer ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");		
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(buffer ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");		
 												}
 												else
 												{
-													sprintf(buffer ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
+													sprintf(g_glcdBuf ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
 												}
-												putStringInGlcdAtPage(PAGE2, buffer);
+												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
 												
-												sprintf(buffer ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
-												putStringInGlcdAtPage(PAGE3, buffer);
+												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
+												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 												
-												sprintf(buffer ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
-												putStringInGlcdAtPage(PAGE4, buffer);
+												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
+												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 												
 												
-												sprintf(buffer ,"%d", resultBuffer);
-												putStringInGlcdAtPage(PAGE8, buffer);
+												sprintf(g_glcdBuf ,"%d", resultBuffer);
+												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
 
 	resultBuffer=254;
@@ -4637,38 +4637,38 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 
 												if( strlen(fileBrowserData.findEntry.dirStructure.dirName.fullName) != 0 )
 												{
-													sprintf(buffer ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
+													sprintf(g_glcdBuf ,"%s", fileBrowserData.findEntry.dirStructure.dirName.fullName);
 												}
 												else
 												{
-													sprintf(buffer ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
+													sprintf(g_glcdBuf ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
 												}
-												putStringInGlcdAtPage(PAGE1, buffer);
+												putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 												
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(buffer ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");		
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(buffer ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");		
 												}
 												else
 												{
-													sprintf(buffer ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
+													sprintf(g_glcdBuf ,"Attribute:0x%x", fileBrowserData.findEntry.dirStructure.otherInfo.attribute);
 												}
-												putStringInGlcdAtPage(PAGE2, buffer);
+												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
 												
-												sprintf(buffer ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
-												putStringInGlcdAtPage(PAGE3, buffer);
+												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
+												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 												
-												sprintf(buffer ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
-												putStringInGlcdAtPage(PAGE4, buffer);
+												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
+												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 												
 												
-												sprintf(buffer ,"%d", resultBuffer);
-												putStringInGlcdAtPage(PAGE8, buffer);
+												sprintf(g_glcdBuf ,"%d", resultBuffer);
+												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
 */
 char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, directoryAndFileEntryInformation *p, CLUSTOR_LOCATION firstEntryClustor,  unsigned char attribute, char *fileName)
@@ -5105,73 +5105,73 @@ char findDirEntryAndDeleteUsingName(fat32Info *diskInfo, clustorData *bufferSect
 void displayDirectoryAndFileEntryInfomation1(directoryAndFileEntryInformation *dirEntryInfo)
 {
 																					resetGlcd();
-																					sprintf(buffer, "S.N:%s,E:%s", (*dirEntryInfo).dirStructure.dirName.simple, (*dirEntryInfo).dirStructure.dirName.extension);
-																					putStringInGlcdAtPage(PAGE1, buffer);
+																					sprintf(g_glcdBuf, "S.N:%s,E:%s", (*dirEntryInfo).dirStructure.dirName.simple, (*dirEntryInfo).dirStructure.dirName.extension);
+																					putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
-																					sprintf(buffer, "LongName");
-																					putStringInGlcdAtPage(PAGE2, buffer);
+																					sprintf(g_glcdBuf, "LongName");
+																					putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-																					sprintf(buffer, "%s", (*dirEntryInfo).dirStructure.dirName.fullName);
-																					putStringInGlcdAtPage(PAGE3, buffer);
+																					sprintf(g_glcdBuf, "%s", (*dirEntryInfo).dirStructure.dirName.fullName);
+																					putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 
-																					sprintf(buffer, "CS:0x%002x, LNEC:%d", (*dirEntryInfo).entryInfo.extensionNameChkSum, (*dirEntryInfo).entryInfo.extensionNameEntryCount);
-																					putStringInGlcdAtPage(PAGE4, buffer);
+																					sprintf(g_glcdBuf, "CS:0x%002x, LNEC:%d", (*dirEntryInfo).entryInfo.extensionNameChkSum, (*dirEntryInfo).entryInfo.extensionNameEntryCount);
+																					putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 																					
-																					sprintf(buffer, "locatedFirstClustor");
-																					putStringInGlcdAtPage(PAGE5, buffer);
+																					sprintf(g_glcdBuf, "locatedFirstClustor");
+																					putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-																					sprintf(buffer, "0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
-																					putStringInGlcdAtPage(PAGE6, buffer);																				
+																					sprintf(g_glcdBuf, "0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
+																					putStringInGlcdAtPage(PAGE6, g_glcdBuf);																				
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void displayDirectoryAndFileEntryInfomation2(directoryAndFileEntryInformation *dirEntryInfo)
 {
 																					resetGlcd();
-																					sprintf(buffer, "indicate:0x%000000008lx", (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor);
-																					putStringInGlcdAtPage(PAGE1, buffer);
+																					sprintf(g_glcdBuf, "indicate:0x%000000008lx", (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor);
+																					putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
-																					sprintf(buffer, "EntryNo:0x%002x", (*dirEntryInfo).entryInfo.entryNumberOrOffset);
-																					putStringInGlcdAtPage(PAGE2, buffer);
+																					sprintf(g_glcdBuf, "EntryNo:0x%002x", (*dirEntryInfo).entryInfo.entryNumberOrOffset);
+																					putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-																					sprintf(buffer, "clustor:0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
-																					putStringInGlcdAtPage(PAGE3, buffer);
+																					sprintf(g_glcdBuf, "clustor:0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
+																					putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 
-																					sprintf(buffer, "secterInC. 0d%d", (*dirEntryInfo).entryInfo.location.secterInClustor);
-																					putStringInGlcdAtPage(PAGE4, buffer);
+																					sprintf(g_glcdBuf, "secterInC. 0d%d", (*dirEntryInfo).entryInfo.location.secterInClustor);
+																					putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 
-																					sprintf(buffer, "size 0x%ld", (*dirEntryInfo).dirStructure.otherInfo.fileSize);
-																					putStringInGlcdAtPage(PAGE5, buffer);
+																					sprintf(g_glcdBuf, "size 0x%ld", (*dirEntryInfo).dirStructure.otherInfo.fileSize);
+																					putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-																					sprintf(buffer, "attribute 0x%002x", (*dirEntryInfo).dirStructure.otherInfo.attribute);
-																					putStringInGlcdAtPage(PAGE6, buffer);
+																					sprintf(g_glcdBuf, "attribute 0x%002x", (*dirEntryInfo).dirStructure.otherInfo.attribute);
+																					putStringInGlcdAtPage(PAGE6, g_glcdBuf);
 
-																					//sprintf(buffer ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
-																					//putStringInGlcdAtPage(PAGE7, buffer);
+																					//sprintf(g_glcdBuf ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
+																					//putStringInGlcdAtPage(PAGE7, g_glcdBuf);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void displayDirectoryAndFileEntryInfomation3(directoryAndFileEntryInformation *dirEntryInfo)
 {
 																					resetGlcd();
-																					sprintf(buffer, "clustorNO:0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
-																					putStringInGlcdAtPage(PAGE1, buffer);
+																					sprintf(g_glcdBuf, "clustorNO:0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
+																					putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 
-																					sprintf(buffer, "secterNO.:0x%002d", (*dirEntryInfo).entryInfo.location.secterInClustor);
-																					putStringInGlcdAtPage(PAGE2, buffer);
+																					sprintf(g_glcdBuf, "secterNO.:0x%002d", (*dirEntryInfo).entryInfo.location.secterInClustor);
+																					putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-																					sprintf(buffer, "EntryOffs:0x%002d", (*dirEntryInfo).entryInfo.entryNumberOrOffset);
-																					putStringInGlcdAtPage(PAGE3, buffer);
+																					sprintf(g_glcdBuf, "EntryOffs:0x%002d", (*dirEntryInfo).entryInfo.entryNumberOrOffset);
+																					putStringInGlcdAtPage(PAGE3, g_glcdBuf);
 
-																					sprintf(buffer, "LongCluNO:0x%000000008lx", (*dirEntryInfo).entryInfo.longNameLocation.clustor);
-																					putStringInGlcdAtPage(PAGE5, buffer);
+																					sprintf(g_glcdBuf, "LongCluNO:0x%000000008lx", (*dirEntryInfo).entryInfo.longNameLocation.clustor);
+																					putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
-																					sprintf(buffer, "LongSeNO.:0x%002d", (*dirEntryInfo).entryInfo.longNameLocation.secterInClustor);
-																					putStringInGlcdAtPage(PAGE6, buffer);
+																					sprintf(g_glcdBuf, "LongSeNO.:0x%002d", (*dirEntryInfo).entryInfo.longNameLocation.secterInClustor);
+																					putStringInGlcdAtPage(PAGE6, g_glcdBuf);
 
-																					sprintf(buffer, "LongEntOf:0x%002d", (*dirEntryInfo).entryInfo.longNameEntryOffset);
-																					putStringInGlcdAtPage(PAGE7, buffer);
+																					sprintf(g_glcdBuf, "LongEntOf:0x%002d", (*dirEntryInfo).entryInfo.longNameEntryOffset);
+																					putStringInGlcdAtPage(PAGE7, g_glcdBuf);
 
-																					//sprintf(buffer ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
-																					//putStringInGlcdAtPage(PAGE7, buffer);
+																					//sprintf(g_glcdBuf ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
+																					//putStringInGlcdAtPage(PAGE7, g_glcdBuf);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5390,23 +5390,23 @@ void analogDataDisplay(char *str)
 	unsigned char displayPageNumber=5;
 
 	
-	sprintf(buffer, "Analog %c", *(str+10));
-	putStringInGlcdAtPage(PAGE0+1, buffer);
+	sprintf(g_glcdBuf, "Analog %c", *(str+10));
+	putStringInGlcdAtPage(PAGE0+1, g_glcdBuf);
 	
-	sprintf(buffer, "Time:%c%c:%c%c:%c%c", *(str+0), *(str+1), *(str+2), *(str+3), *(str+4), *(str+5));
-	putStringInGlcdAtPage(PAGE0+2, buffer);
+	sprintf(g_glcdBuf, "Time:%c%c:%c%c:%c%c", *(str+0), *(str+1), *(str+2), *(str+3), *(str+4), *(str+5));
+	putStringInGlcdAtPage(PAGE0+2, g_glcdBuf);
 
 	for(portNum=0; portNum<8; portNum+=2)
 	{
 		strncpy(strBuffer, str+12+(portNum*ANALOG_DATA_OFFSET), ANALOG_DATA_VALUE_LENGTH);
 		*(strBuffer+ANALOG_DATA_VALUE_LENGTH)=0;
-		sprintf(buffer, "PORT%d:%s", portNum+1, strBuffer);
+		sprintf(g_glcdBuf, "PORT%d:%s", portNum+1, strBuffer);
 		
 		strncpy(strBuffer, str+12+((portNum+1)*ANALOG_DATA_OFFSET), ANALOG_DATA_VALUE_LENGTH);
 		*(strBuffer+ANALOG_DATA_VALUE_LENGTH)=0;
-		sprintf(buffer, "%s,PORT%d:%s", buffer, portNum+2, strBuffer);
+		sprintf(g_glcdBuf, "%s,PORT%d:%s", g_glcdBuf, portNum+2, strBuffer);
 		
-	putStringInGlcdAtPage(PAGE0+4+(portNum/2), buffer);
+	putStringInGlcdAtPage(PAGE0+4+(portNum/2), g_glcdBuf);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5737,8 +5737,8 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		}
 
 
-		sprintf(buffer, "fileSize:0d%ld", readFileSize);
-		putStringInGlcdAtPage(PAGE4, buffer);
+		sprintf(g_glcdBuf, "fileSize:0d%ld", readFileSize);
+		putStringInGlcdAtPage(PAGE4, g_glcdBuf);
 		
 		count=0;
 		/*classify data*/
@@ -5976,8 +5976,8 @@ void testDisplayIndicateClustorInfo(simpleDirectoryAndFileEntryInfomation *dirEn
 	unsigned char i;
 	for(i=0; i<DIR_DISPLAY_NUMBER; i++)
 	{
-		sprintf(buffer, "0x%lx", (*(dirEntry+i)).dirStructure.otherInfo.indicateFirstClustor);
-		putStringInGlcdAtPageUsingOffset(i, buffer, FONT_5X8_OFFSET*15);
+		sprintf(g_glcdBuf, "0x%lx", (*(dirEntry+i)).dirStructure.otherInfo.indicateFirstClustor);
+		putStringInGlcdAtPageUsingOffset(i, g_glcdBuf, FONT_5X8_OFFSET*15);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
