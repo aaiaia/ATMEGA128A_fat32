@@ -21,12 +21,9 @@ unsigned char nextSequence()
 
 	while(KeyBuf == 0xFF)
 	{
-
 		reInitKeyPad();//20140822 ÅÂ¼º
 
 		PORTA&=~0b00000010; _delay_us(5); // 1¹øÂ° ÁÙ ¼±ÅÃ Ãâ·Â ºÎºÐ ÀÔ·Â.
-
-		
 		
 		if ((PIND&0x10)==0)KeyBuf='0'; // ÀÔ·Â ºÎºÐ PD4
 		if ((PIND&0x20)==0)KeyBuf='4';
@@ -34,8 +31,6 @@ unsigned char nextSequence()
 		PORTA|=0b00000010; // 1¹øÂ° ÁÙ ÇØÁ¦
 		//PD6
 		PORTD&=~0b01000000; _delay_us(5); // 1¹øÂ° ÁÙ ¼±ÅÃ Ãâ·Â ºÎºÐ ÀÔ·Â.
-
-
 
 		if ((PIND&0x10)==0)KeyBuf='2'; // ÀÔ·Â ºÎºÐ
 		if ((PIND&0x20)==0)
@@ -48,12 +43,9 @@ unsigned char nextSequence()
 		PORTD|=0b01000000; // 1¹øÂ° ÁÙ ÇØÁ¦
 		//PD7
 		PORTD&=~0b10000000; _delay_us(5); // 1¹øÂ° ÁÙ ¼±ÅÃ Ãâ·Â ºÎºÐ ÀÔ·Â.
-
-		
 		
 		if ((PIND&0x10)==0)KeyBuf='1'; // ÀÔ·Â ºÎºÐ
 		if ((PIND&0x20)==0)KeyBuf='5'; // PD5
-
 
 		//if ((PIND&0x01)==0)KeyBuf='7';
 		PORTD|=0b10000000; // 1¹øÂ° ÁÙ ÇØÁ¦
@@ -61,8 +53,6 @@ unsigned char nextSequence()
 		//PORTD = 0b00110001; DDRA = 0b11111111; DDRD = 0b11001110;  //20140822 ¼öÁ¤
 		PORTD |= 0b00110001; DDRA |= 0b00000001; DDRD = 0b11001110; // 20140822 taesung
 		_delay_ms(100);
-
-
 
 //		if(KeyBuf == 0xff) 	putStringInGlcdAtPage(PAGE8, "");
 	}
