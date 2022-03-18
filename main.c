@@ -31,14 +31,6 @@ char buffer[STRING_BUFFER_SIZE];
 unsigned char SWITCH=0;
 unsigned char testFlag = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define INPUT							0x00	
-#define OUTPUT							0xFF
-
-#define ALL_ZERO						0x00
-#define ALL_ONE							0xFF
-
-#define SET_INPUT(x,y)						(y&=(~(1<<x)))
-#define SET_OUTPUT(x,y)						(y|=(1<<x))
 
 #define SIGNED_8BITS	(signed char)
 #define SIGNED_16BITS	(signed int)
