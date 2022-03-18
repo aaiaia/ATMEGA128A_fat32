@@ -20,7 +20,7 @@ struct stringBuffer
 {
 	char dat[STRING_BUFFER_SIZE];
 	char *loc;
-	char bufferDirection;
+	char dir;
 }typedef stringBuffer;
 
 stringBuffer g_strBuf;
@@ -5582,11 +5582,11 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 					if bufferDirection have unicode 'R', bufferPointer indicate 1st buffer location.
 				*/
-				if(g_strBuf.bufferDirection == 'F')
+				if(g_strBuf.dir == 'F')
 				{
 					count=(g_strBuf.loc-g_strBuf.dat);
 				}
-				else if(g_strBuf.bufferDirection == 'R')
+				else if(g_strBuf.dir == 'R')
 				{
 					count=(g_strBuf.dat+STRING_BUFFER_SIZE-2)-g_strBuf.loc;
 				}
@@ -5611,7 +5611,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 					{
 						*(g_strBuf.dat + STRING_BUFFER_SIZE - 1) = 0;//End of char array reserved bytes.
 						g_strBuf.loc = (g_strBuf.dat+STRING_BUFFER_SIZE-2);//when calculate copied string length, (g_strBuf.dat+STRING_BUFFER_SIZE-2) is reference offset in reserve.
-						g_strBuf.bufferDirection='R';
+						g_strBuf.dir='R';
 
 					
 						str=((*searchingSecterBuffer).secterData.data+((readFileSize-1)%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter)));//rest
@@ -5683,7 +5683,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				if((*p).dirStructure.otherInfo.fileSize<=readFileSize) continue;
 				/*data abstract*/
 				g_strBuf.loc=g_strBuf.dat;
-				g_strBuf.bufferDirection='F';
+				g_strBuf.dir='F';
 
 				
 				str=(*searchingSecterBuffer).secterData.data+(readFileSize%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter));//rest
