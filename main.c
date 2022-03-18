@@ -54,10 +54,10 @@ unsigned char testFlag = 0;
 #define FONT_SIZE_X						0x08
 #define FONT_SIZE_Y						0x05
 
-#define FRONT_CHAR_BLANK				0x01
+#define FONT_BLANK_FRONT				0x01
 //#define CHAR_BLANK_CHAR//don't enter value
 
-#define FONT_5X8_OFFSET		(FONT_SIZE_Y + FRONT_CHAR_BLANK)
+#define FONT_5X8_OFFSET		(FONT_SIZE_Y + FONT_BLANK_FRONT)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const char ENGLISH_FONT_5X8[][FONT_SIZE_Y] = {
 	{0x00, 0x00, 0x00, 0x00, 0x00}, // (space)
@@ -236,7 +236,7 @@ const char ENGLISH_FONT_5X8[][FONT_SIZE_Y] = {
 
 #define LCD_DATA_BUS_TYPE			unsigned char
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned char maximumNumberOfCharacterInPage = ((LCD_PENAL_LENGTH - 1) / (FONT_SIZE_Y + FRONT_CHAR_BLANK));
+unsigned char maximumNumberOfCharacterInPage = ((LCD_PENAL_LENGTH - 1) / (FONT_SIZE_Y + FONT_BLANK_FRONT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //BELOW DEFINES MUST ARE MUST USED WITH CONTROL_MODE. BE USED WITH is mean that CONTROL_MODE and CONTROL_INSTRUCT OR OPERATE EACH OTHER 
@@ -910,7 +910,7 @@ void overwriteStringInGlcdAtPageAddressSetStartColumnOffsetToPage(unsigned char 
 			}
 			continue;
 		}
-		else if((columnOffset%FONT_5X8_OFFSET) == FRONT_CHAR_BLANK)
+		else if((columnOffset%FONT_5X8_OFFSET) == FONT_BLANK_FRONT)
 		{
 			if(*p != '\0')
 			{
