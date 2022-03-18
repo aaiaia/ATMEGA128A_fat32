@@ -23,7 +23,7 @@ struct stringBuffer
 	char bufferDirection;
 }typedef stringBuffer;
 
-stringBuffer commonStringBuffer;
+stringBuffer g_strBuf;
 
 char g_glcdBuf[STRING_BUFFER_SIZE];
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3342,8 +3342,8 @@ char findEmptyDirEntry(fat32Info *diskInfo, clustorData *searchingSecterBuffer, 
 	(*searchingSecterBuffer).secterInClustor=0;
 	(*searchingSecterBuffer).locatedClustor=targetClustor;
 
-								// sprintf(commonStringBuffer.buffer, "T.O.E.N:%d ", totalOccupiedEntryNumber);
-								// sendString(commonStringBuffer.buffer);
+								// sprintf(g_strBuf.buffer, "T.O.E.N:%d ", totalOccupiedEntryNumber);
+								// sendString(g_strBuf.buffer);
 	
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
 
@@ -3732,21 +3732,21 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 			// {
 				// if( (*(dirEntry+start) != 0x00) && (*(dirEntry+start) != 0xff) )/* If dir entry is not have empty and end bits. */
 				// {
-										// // sprintf(commonStringBuffer.buffer, "!0x%x", (**fileName));
-										// // sendStringOnly(commonStringBuffer.buffer);
+										// // sprintf(g_strBuf.buffer, "!0x%x", (**fileName));
+										// // sendStringOnly(g_strBuf.buffer);
 										// // sendCharOnly('|');
 										
-										// // sprintf(commonStringBuffer.buffer, "!0x%x", *(dirEntry+i));
-										// // sendStringOnly(commonStringBuffer.buffer);
+										// // sprintf(g_strBuf.buffer, "!0x%x", *(dirEntry+i));
+										// // sendStringOnly(g_strBuf.buffer);
 										// // sendCharOnly(':');
 					// return -1;
 				// }
-										// // sprintf(commonStringBuffer.buffer, "0x%x", (**fileName));
-										// // sendStringOnly(commonStringBuffer.buffer);
+										// // sprintf(g_strBuf.buffer, "0x%x", (**fileName));
+										// // sendStringOnly(g_strBuf.buffer);
 										// // sendCharOnly('|');
 										
-										// // sprintf(commonStringBuffer.buffer, "0x%x", *(dirEntry+i));
-										// // sendStringOnly(commonStringBuffer.buffer);
+										// // sprintf(g_strBuf.buffer, "0x%x", *(dirEntry+i));
+										// // sendStringOnly(g_strBuf.buffer);
 										// // sendCharOnly(':');
 			// }
 			// else
@@ -3796,8 +3796,8 @@ char compareLongNameStringAndLongNameDirEntry(char* fileName, char *dirEntry)
 	{
 		if( LONG_NAME_ENTRY_MAXIMUM_NUMBER < ((*(dirEntry))&LONG_NAME_NUMBER_MASK) )
 		{
-					// sprintf(commonStringBuffer.buffer, "%d(0x%x) < %d(0x%x) ", LONG_NAME_ENTRY_MAXIMUM_NUMBER, LONG_NAME_ENTRY_MAXIMUM_NUMBER, ((*(dirEntry))&LONG_NAME_NUMBER_MASK), ((*(dirEntry))&LONG_NAME_NUMBER_MASK));
-					// sendStringOnly(commonStringBuffer.buffer);
+					// sprintf(g_strBuf.buffer, "%d(0x%x) < %d(0x%x) ", LONG_NAME_ENTRY_MAXIMUM_NUMBER, LONG_NAME_ENTRY_MAXIMUM_NUMBER, ((*(dirEntry))&LONG_NAME_NUMBER_MASK), ((*(dirEntry))&LONG_NAME_NUMBER_MASK));
+					// sendStringOnly(g_strBuf.buffer);
 					// sendString("long name entry exceed.");
 			return -1;
 		}
@@ -3864,10 +3864,10 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 		{
 					// if((*str!=DIR_DELEDTED)&&(*str!=DIR_EMPTY))//deleted or empty entry
 					// {
-						// sprintf(commonStringBuffer.buffer,
+						// sprintf(g_strBuf.buffer,
 						// "passingEntryNum=%d, extEntryNum=%d, longEntryNum=%d, ATTR=%x, VLE=%x",
 						// passingEntryNumber, (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount, ((*str)&LONG_NAME_NUMBER_MASK), ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ), ((*str)&LONG_NAME_LASTEST_MASK));
-						// sendString(commonStringBuffer.buffer);
+						// sendString(g_strBuf.buffer);
 					// }
 			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))//deleted or empty entry
 			{
@@ -3914,8 +3914,8 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 				if(compareLongNameStringAndLongNameDirEntry((*physicalDirLocationInfo).dirStructure.dirName.fullName, str))
 				{
 							// sendString("Long name entry is different.");
-							// sprintf(commonStringBuffer.buffer ,"%s, ", (*physicalDirLocationInfo).dirStructure.dirName.fullName+(((*str)&LONG_NAME_NUMBER_MASK)-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);
-							// sprintf(commonStringBuffer.buffer, "%s|%c|%c|%c|%c|%c|", commonStringBuffer.buffer, *(str+1), *(str+3), *(str+5), *(str+7), *(str+8));
+							// sprintf(g_strBuf.buffer ,"%s, ", (*physicalDirLocationInfo).dirStructure.dirName.fullName+(((*str)&LONG_NAME_NUMBER_MASK)-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);
+							// sprintf(g_strBuf.buffer, "%s|%c|%c|%c|%c|%c|", g_strBuf.buffer, *(str+1), *(str+3), *(str+5), *(str+7), *(str+8));
 					passingEntryNumber=(((*(str))&LONG_NAME_NUMBER_MASK));
 					/*reset long name entry info*/
 					//longNameEntryCount=0;
@@ -4184,8 +4184,8 @@ char findDirEntryUsingName(fat32Info *diskInfo, clustorData *searchingSecterInCl
 	setTargetLocation(&((*dirEntryInfo).entryInfo.location), locateClustor, 0);
 
 						// sendString("set basic directory");
-						// sprintf(commonStringBuffer.buffer, "extension Entry count:%d", (*dirEntryInfo).entryInfo.extensionNameEntryCount);
-						// sendString(commonStringBuffer.buffer);
+						// sprintf(g_strBuf.buffer, "extension Entry count:%d", (*dirEntryInfo).entryInfo.extensionNameEntryCount);
+						// sendString(g_strBuf.buffer);
 						// sendStringOnly("TargetName:");
 						// sendString(targetName);
 						// sendDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
@@ -4354,8 +4354,8 @@ char dirInfoConvertToDirectoryEntry(directoryStructure *p, char *dirEntry)
 
 	/* copy file size to dir entry. */
 						// sendString("/*make test print*/");
-						// sprintf(commonStringBuffer.buffer, "input file size is:0x%lx", (*p).otherInfo.fileSize);
-						// sendString(commonStringBuffer.buffer);
+						// sprintf(g_strBuf.buffer, "input file size is:0x%lx", (*p).otherInfo.fileSize);
+						// sendString(g_strBuf.buffer);
 						
 	parsing32BitsToLittleEndian(dirEntry+DIR_FILESIZE, (*p).otherInfo.fileSize);
 	
@@ -4495,8 +4495,8 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 	(*searchingSecterInClustor).locatedClustor=(*p).entryInfo.location.clustor;
 	(*searchingSecterInClustor).secterInClustor=(*p).entryInfo.location.secterInClustor;
 
-								// sprintf(commonStringBuffer.buffer, "L.N.E.C:%d ", (*p).entryInfo.extensionNameEntryCount);
-								// sendString(commonStringBuffer.buffer);
+								// sprintf(g_strBuf.buffer, "L.N.E.C:%d ", (*p).entryInfo.extensionNameEntryCount);
+								// sendString(g_strBuf.buffer);
 					
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
 
@@ -4696,15 +4696,15 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 	//set long name info and location info start//
 	setTargetLocation(&((*p).entryInfo.location), firstEntryClustor, 0);
 	//set long name info and location info end//
-									// sprintf(commonStringBuffer.buffer, "In create af set basic:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "In create af set basic:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 	/*Same name find section start*/
 	// if(strlen((*p).dirStructure.dirName.fullName)==0)
 	if(*((*p).dirStructure.dirName.simple+DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~')
 	{
 									// sendString("notExistSameSimpleName");
-									// sprintf(commonStringBuffer.buffer, "entryInfo.extensionNameEntryCount:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "entryInfo.extensionNameEntryCount:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 		if(notExistSameSimpleName(diskInfo, bufferSecterInClustor, (*p).entryInfo.location.clustor, &((*p).dirStructure.dirName)) != 0)
 		{
 			return 4;
@@ -4713,8 +4713,8 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 	else
 	{
 									// sendString("notExistSameLongName");
-									// sprintf(commonStringBuffer.buffer, "entryInfo.extensionNameEntryCount:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "entryInfo.extensionNameEntryCount:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 		if(notExistSameLongName(diskInfo, bufferSecterInClustor, (*p).entryInfo.location.clustor, &((*p).dirStructure.dirName)) != 0)
 		{
 			return 5;
@@ -4726,8 +4726,8 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 			setTargetLocation(&((*p).entryInfo.location), firstEntryClustor, 0);
 		}
 		(*p).entryInfo.extensionNameChkSum = generateLongNameCheckSum((*p).dirStructure.dirName.simple, (*p).dirStructure.dirName.extension);
-									// sprintf(commonStringBuffer.buffer, "In create af notExiSimplName2:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "In create af notExiSimplName2:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 	}
 	//Same name find section end//
 
@@ -4738,8 +4738,8 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		setTargetLocation(&((*p).entryInfo.location), writeNextClustor(diskInfo, bufferSecterInClustor, (*p).entryInfo.location.clustor, findEmptyClustor(diskInfo, bufferSecterInClustor, (*p).entryInfo.location.clustor)), 0);
 		(*p).entryInfo.entryNumberOrOffset=0;
 	}
-									// sprintf(commonStringBuffer.buffer, "In create af findEmptyDirEntr:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "In create af findEmptyDirEntr:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 	//find empty dir entry and write dir entry end//
 	
 	//update date & time start
@@ -4838,8 +4838,8 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 	
 	//Part of writing new dirEntry
 	writeDirInfoToDirectoryEntry(diskInfo, bufferSecterInClustor, p);
-									// sprintf(commonStringBuffer.buffer, "In create af writeDirInfoToDi:%d", (*p).entryInfo.extensionNameEntryCount);
-									// sendString(commonStringBuffer.buffer);
+									// sprintf(g_strBuf.buffer, "In create af writeDirInfoToDi:%d", (*p).entryInfo.extensionNameEntryCount);
+									// sendString(g_strBuf.buffer);
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5245,7 +5245,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 	}
 	else
 	{//no//find next secter in same clustor or next clustor is empty.
-		if( (writingPositionInSdCard+writingStringOccupiedSizeMain)<((*clustor).secterData.data+SD_DATA_BUFFER_SIZE) )//writingStringOccupiedSize=strlen(commonStringBuffer.bufferPointer)+strlen(pastedTailString);
+		if( (writingPositionInSdCard+writingStringOccupiedSizeMain)<((*clustor).secterData.data+SD_DATA_BUFFER_SIZE) )//writingStringOccupiedSize=strlen(g_strBuf.bufferPointer)+strlen(pastedTailString);
 		{
 			strncpy(writingPositionInSdCard, pastedString, writingStringOccupiedSizeMain);
 			pastedString+=writingStringOccupiedSizeMain;
@@ -5426,7 +5426,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 	/*read file name part start*/
 	if((*p).entryInfo.extensionNameEntryCount!=0)
 	{
-		memset(commonStringBuffer.buffer, 0x00, STRING_BUFFER_SIZE);
+		memset(g_strBuf.buffer, 0x00, STRING_BUFFER_SIZE);
 
 		(*searchingSecterBuffer).locatedClustor=(*p).entryInfo.longNameLocation.clustor;
 		(*searchingSecterBuffer).secterInClustor=(*p).entryInfo.longNameLocation.secterInClustor;
@@ -5438,7 +5438,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		str = (*searchingSecterBuffer).secterData.data + (*p).entryInfo.longNameEntryOffset;
 		for(count=(*p).entryInfo.extensionNameEntryCount; count!=0; count--)
 		{
-			abstractDirLongNameFromDirectoryEntry(str, commonStringBuffer.buffer);
+			abstractDirLongNameFromDirectoryEntry(str, g_strBuf.buffer);
 			str+=DIR_DISCRIPTION_LENGTH;
 			if( !(str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE) )
 			{
@@ -5458,7 +5458,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 	}
 	else
 	{
-		memset(commonStringBuffer.buffer, 0x00, STRING_BUFFER_SIZE);
+		memset(g_strBuf.buffer, 0x00, STRING_BUFFER_SIZE);
 
 		(*searchingSecterBuffer).locatedClustor=(*p).entryInfo.location.clustor;
 		(*searchingSecterBuffer).secterInClustor=(*p).entryInfo.location.secterInClustor;
@@ -5470,21 +5470,21 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		for(count=0; count<8; count++)
 		{
 			if(*(str+count) == DIR_NAME_EMPTY_DATA) break;
-			*(commonStringBuffer.buffer+count)=*(str+count);
+			*(g_strBuf.buffer+count)=*(str+count);
 
 		}
 		
-		*(commonStringBuffer.buffer+count)='.';
+		*(g_strBuf.buffer+count)='.';
 		count++;
-		strncpy(commonStringBuffer.buffer+count, str+DIR_SIMPLE_NAME_MAXIMUM_LENGTH , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy
+		strncpy(g_strBuf.buffer+count, str+DIR_SIMPLE_NAME_MAXIMUM_LENGTH , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy
 
-		checkAndConvertSimpleNameStringForm(commonStringBuffer.buffer, count+DIR_EXTENSION_MAXUMUM_LENGTH+1);
+		checkAndConvertSimpleNameStringForm(g_strBuf.buffer, count+DIR_EXTENSION_MAXUMUM_LENGTH+1);
 	}
 	/*read file name part end*/
 
-	/*if need file name processing, add code this. file name is loaded commonStringBuffer.buffer. start*/
-	putStringInGlcdAtPage(PAGE0+0, commonStringBuffer.buffer);
-	/*if need file name processing, add code this. file name is loaded commonStringBuffer.buffer. end*/
+	/*if need file name processing, add code this. file name is loaded g_strBuf.buffer. start*/
+	putStringInGlcdAtPage(PAGE0+0, g_strBuf.buffer);
+	/*if need file name processing, add code this. file name is loaded g_strBuf.buffer. end*/
 	
 
 	unsigned long readFileSize=0;//This variable is same to file size.
@@ -5582,16 +5582,16 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 					if bufferDirection have unicode 'R', bufferPointer indicate 1st buffer location.
 				*/
-				if(commonStringBuffer.bufferDirection == 'F')
+				if(g_strBuf.bufferDirection == 'F')
 				{
-					count=(commonStringBuffer.bufferPointer-commonStringBuffer.buffer);
+					count=(g_strBuf.bufferPointer-g_strBuf.buffer);
 				}
-				else if(commonStringBuffer.bufferDirection == 'R')
+				else if(g_strBuf.bufferDirection == 'R')
 				{
-					count=(commonStringBuffer.buffer+STRING_BUFFER_SIZE-2)-commonStringBuffer.bufferPointer;
+					count=(g_strBuf.buffer+STRING_BUFFER_SIZE-2)-g_strBuf.bufferPointer;
 				}
 				
-				// commonStringBuffer.bufferPointer=commonStringBuffer.buffer;
+				// g_strBuf.bufferPointer=g_strBuf.buffer;
 				/*
 				classify case.
 				1. no rest
@@ -5609,9 +5609,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 					if((dataFileInfoLength<readFileSize))
 					{
-						*(commonStringBuffer.buffer + STRING_BUFFER_SIZE - 1) = 0;//End of char array reserved bytes.
-						commonStringBuffer.bufferPointer = (commonStringBuffer.buffer+STRING_BUFFER_SIZE-2);//when calculate copied string length, (commonStringBuffer.buffer+STRING_BUFFER_SIZE-2) is reference offset in reserve.
-						commonStringBuffer.bufferDirection='R';
+						*(g_strBuf.buffer + STRING_BUFFER_SIZE - 1) = 0;//End of char array reserved bytes.
+						g_strBuf.bufferPointer = (g_strBuf.buffer+STRING_BUFFER_SIZE-2);//when calculate copied string length, (g_strBuf.buffer+STRING_BUFFER_SIZE-2) is reference offset in reserve.
+						g_strBuf.bufferDirection='R';
 
 					
 						str=((*searchingSecterBuffer).secterData.data+((readFileSize-1)%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter)));//rest
@@ -5648,15 +5648,15 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 							for(;!(str<(*searchingSecterBuffer).secterData.data);)
 							{
-								*(commonStringBuffer.bufferPointer)=*(str);//copy.
+								*(g_strBuf.bufferPointer)=*(str);//copy.
 
-								if( (commonStringBuffer.bufferPointer != (commonStringBuffer.buffer + STRING_BUFFER_SIZE - 2)) && (*(commonStringBuffer.bufferPointer)==0x0a) )//always 0x0a is located tail of data set.
+								if( (g_strBuf.bufferPointer != (g_strBuf.buffer + STRING_BUFFER_SIZE - 2)) && (*(g_strBuf.bufferPointer)==0x0a) )//always 0x0a is located tail of data set.
 								{
 									break;
 								}
 								else
 								{
-									commonStringBuffer.bufferPointer--;
+									g_strBuf.bufferPointer--;
 									str--;
 								}
 							}
@@ -5664,9 +5664,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 							
 							
 						}
-						while((((*searchingSecterBuffer).locatedClustor!=(*p).dirStructure.otherInfo.indicateFirstClustor)||((*searchingSecterBuffer).secterInClustor!=0))&&(*(commonStringBuffer.bufferPointer)!=0x0a));//direction is reverse.
+						while((((*searchingSecterBuffer).locatedClustor!=(*p).dirStructure.otherInfo.indicateFirstClustor)||((*searchingSecterBuffer).secterInClustor!=0))&&(*(g_strBuf.bufferPointer)!=0x0a));//direction is reverse.
 
-						displayPointer = (commonStringBuffer.bufferPointer + 1);
+						displayPointer = (g_strBuf.bufferPointer + 1);
 
 						break;
 					}
@@ -5682,8 +5682,8 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				/*Read file size is can't exceed file size.*/
 				if((*p).dirStructure.otherInfo.fileSize<=readFileSize) continue;
 				/*data abstract*/
-				commonStringBuffer.bufferPointer=commonStringBuffer.buffer;
-				commonStringBuffer.bufferDirection='F';
+				g_strBuf.bufferPointer=g_strBuf.buffer;
+				g_strBuf.bufferDirection='F';
 
 				
 				str=(*searchingSecterBuffer).secterData.data+(readFileSize%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter));//rest
@@ -5716,20 +5716,20 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 					
 					for(;str<(((*searchingSecterBuffer).secterData).data+SD_DATA_BUFFER_SIZE);str++)
 					{
-						*(commonStringBuffer.bufferPointer)=*(str);//copy.
+						*(g_strBuf.bufferPointer)=*(str);//copy.
 
-						if(*(commonStringBuffer.bufferPointer-1)==0x0a)
+						if(*(g_strBuf.bufferPointer-1)==0x0a)
 						{
-							*(commonStringBuffer.bufferPointer)=0;
-							readFileSize+=(commonStringBuffer.bufferPointer-commonStringBuffer.buffer);
+							*(g_strBuf.bufferPointer)=0;
+							readFileSize+=(g_strBuf.bufferPointer-g_strBuf.buffer);
 							break;
 						}
-						commonStringBuffer.bufferPointer++;
+						g_strBuf.bufferPointer++;
 					}
 				}
-				while((((*searchingSecterBuffer).nextClustor!=CLUSTOR_IS_END)||((*searchingSecterBuffer).secterInClustor<(*diskInfo).secterPerClustor))&&(*(commonStringBuffer.bufferPointer-1)!=0x0a));//direction is forward.
+				while((((*searchingSecterBuffer).nextClustor!=CLUSTOR_IS_END)||((*searchingSecterBuffer).secterInClustor<(*diskInfo).secterPerClustor))&&(*(g_strBuf.bufferPointer-1)!=0x0a));//direction is forward.
 
-				displayPointer = (commonStringBuffer.buffer);				
+				displayPointer = (g_strBuf.buffer);				
 				break;
 			
 			default:
@@ -6179,14 +6179,14 @@ char sendDirEntryInfoToUsart0(directoryAndFileEntryInformation *findEntryBuffer)
 		sendStringOnly("- ");
 	}
 	
-	sprintf(commonStringBuffer.buffer, "%10ld ", (*findEntryBuffer).dirStructure.otherInfo.fileSize);
-	sendStringOnly(commonStringBuffer.buffer);
+	sprintf(g_strBuf.buffer, "%10ld ", (*findEntryBuffer).dirStructure.otherInfo.fileSize);
+	sendStringOnly(g_strBuf.buffer);
 	
-	sprintf(commonStringBuffer.buffer, "WT %4d/%2d/%2d,%2d:%2d:%2d ", (*findEntryBuffer).dirStructure.writeDateInfo.date.year+1980, (*findEntryBuffer).dirStructure.writeDateInfo.date.month, (*findEntryBuffer).dirStructure.writeDateInfo.date.day, (*findEntryBuffer).dirStructure.writeDateInfo.time.hour, (*findEntryBuffer).dirStructure.writeDateInfo.time.minute, (*findEntryBuffer).dirStructure.writeDateInfo.time.second);
-	sendStringOnly(commonStringBuffer.buffer);
+	sprintf(g_strBuf.buffer, "WT %4d/%2d/%2d,%2d:%2d:%2d ", (*findEntryBuffer).dirStructure.writeDateInfo.date.year+1980, (*findEntryBuffer).dirStructure.writeDateInfo.date.month, (*findEntryBuffer).dirStructure.writeDateInfo.date.day, (*findEntryBuffer).dirStructure.writeDateInfo.time.hour, (*findEntryBuffer).dirStructure.writeDateInfo.time.minute, (*findEntryBuffer).dirStructure.writeDateInfo.time.second);
+	sendStringOnly(g_strBuf.buffer);
 
-	sprintf(commonStringBuffer.buffer, "C.N:0x%000000008x ", (*findEntryBuffer).dirStructure.otherInfo.indicateFirstClustor);
-	sendStringOnly(commonStringBuffer.buffer);
+	sprintf(g_strBuf.buffer, "C.N:0x%000000008x ", (*findEntryBuffer).dirStructure.otherInfo.indicateFirstClustor);
+	sendStringOnly(g_strBuf.buffer);
 	
 	if((*findEntryBuffer).entryInfo.extensionNameEntryCount==0)
 	{
@@ -6201,8 +6201,8 @@ char sendDirEntryInfoToUsart0(directoryAndFileEntryInformation *findEntryBuffer)
 	}
 	else
 	{
-		// sprintf(commonStringBuffer.buffer, " L%d:", (*findEntryBuffer).entryInfo.extensionNameEntryCount);
-		// sendStringOnly(commonStringBuffer.buffer);
+		// sprintf(g_strBuf.buffer, " L%d:", (*findEntryBuffer).entryInfo.extensionNameEntryCount);
+		// sendStringOnly(g_strBuf.buffer);
 		sendStringOnly((*findEntryBuffer).dirStructure.dirName.fullName);
 	}
 	SEND_COMMON();
@@ -6364,28 +6364,28 @@ char cmdDisplayArchive(fat32Info *diskInfo, clustorData *searchingSecterBuffer, 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendDirectoryAndFileEntryInfomation1(directoryAndFileEntryInformation *dirEntryInfo)
 {
-		// sprintf(commonStringBuffer.buffer, "S.N:%002x|%002x|%002x|%002x|%002x|%002x|%002x|%002x, E:%002x|%002x|%002x", *((*dirEntryInfo).dirStructure.dirName.simple+0), *((*dirEntryInfo).dirStructure.dirName.simple+1), *((*dirEntryInfo).dirStructure.dirName.simple+2), *((*dirEntryInfo).dirStructure.dirName.simple+3), *((*dirEntryInfo).dirStructure.dirName.simple+4), *((*dirEntryInfo).dirStructure.dirName.simple+5), *((*dirEntryInfo).dirStructure.dirName.simple+6), *((*dirEntryInfo).dirStructure.dirName.simple+7), *((*dirEntryInfo).dirStructure.dirName.extension+0), *((*dirEntryInfo).dirStructure.dirName.extension+1), *((*dirEntryInfo).dirStructure.dirName.extension+2));
-		// sendString(commonStringBuffer.buffer);
+		// sprintf(g_strBuf.buffer, "S.N:%002x|%002x|%002x|%002x|%002x|%002x|%002x|%002x, E:%002x|%002x|%002x", *((*dirEntryInfo).dirStructure.dirName.simple+0), *((*dirEntryInfo).dirStructure.dirName.simple+1), *((*dirEntryInfo).dirStructure.dirName.simple+2), *((*dirEntryInfo).dirStructure.dirName.simple+3), *((*dirEntryInfo).dirStructure.dirName.simple+4), *((*dirEntryInfo).dirStructure.dirName.simple+5), *((*dirEntryInfo).dirStructure.dirName.simple+6), *((*dirEntryInfo).dirStructure.dirName.simple+7), *((*dirEntryInfo).dirStructure.dirName.extension+0), *((*dirEntryInfo).dirStructure.dirName.extension+1), *((*dirEntryInfo).dirStructure.dirName.extension+2));
+		// sendString(g_strBuf.buffer);
 
-		// sprintf(commonStringBuffer.buffer, "S.N:%c|%c|%c|%c|%c|%c|%c|%c, E:%c|%c|%c", *((*dirEntryInfo).dirStructure.dirName.simple+0), *((*dirEntryInfo).dirStructure.dirName.simple+1), *((*dirEntryInfo).dirStructure.dirName.simple+2), *((*dirEntryInfo).dirStructure.dirName.simple+3), *((*dirEntryInfo).dirStructure.dirName.simple+4), *((*dirEntryInfo).dirStructure.dirName.simple+5), *((*dirEntryInfo).dirStructure.dirName.simple+6), *((*dirEntryInfo).dirStructure.dirName.simple+7), *((*dirEntryInfo).dirStructure.dirName.extension+0), *((*dirEntryInfo).dirStructure.dirName.extension+1), *((*dirEntryInfo).dirStructure.dirName.extension+2));
-		// sendString(commonStringBuffer.buffer);
+		// sprintf(g_strBuf.buffer, "S.N:%c|%c|%c|%c|%c|%c|%c|%c, E:%c|%c|%c", *((*dirEntryInfo).dirStructure.dirName.simple+0), *((*dirEntryInfo).dirStructure.dirName.simple+1), *((*dirEntryInfo).dirStructure.dirName.simple+2), *((*dirEntryInfo).dirStructure.dirName.simple+3), *((*dirEntryInfo).dirStructure.dirName.simple+4), *((*dirEntryInfo).dirStructure.dirName.simple+5), *((*dirEntryInfo).dirStructure.dirName.simple+6), *((*dirEntryInfo).dirStructure.dirName.simple+7), *((*dirEntryInfo).dirStructure.dirName.extension+0), *((*dirEntryInfo).dirStructure.dirName.extension+1), *((*dirEntryInfo).dirStructure.dirName.extension+2));
+		// sendString(g_strBuf.buffer);
 		
-		sprintf(commonStringBuffer.buffer, "S.N:%s, E:%s", (*dirEntryInfo).dirStructure.dirName.simple, (*dirEntryInfo).dirStructure.dirName.extension);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "S.N:%s, E:%s", (*dirEntryInfo).dirStructure.dirName.simple, (*dirEntryInfo).dirStructure.dirName.extension);
+		sendString(g_strBuf.buffer);
 
-		sprintf(commonStringBuffer.buffer, "LongName:%s",(*dirEntryInfo).dirStructure.dirName.fullName);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "LongName:%s",(*dirEntryInfo).dirStructure.dirName.fullName);
+		sendString(g_strBuf.buffer);
 
-		sprintf(commonStringBuffer.buffer, "CheckSumS:0x%002x, LongNameEntryNum:%002d", (*dirEntryInfo).entryInfo.extensionNameChkSum, (*dirEntryInfo).entryInfo.extensionNameEntryCount);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "CheckSumS:0x%002x, LongNameEntryNum:%002d", (*dirEntryInfo).entryInfo.extensionNameChkSum, (*dirEntryInfo).entryInfo.extensionNameEntryCount);
+		sendString(g_strBuf.buffer);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendDirectoryAndFileEntryInfomation2(directoryAndFileEntryInformation *dirEntryInfo)
-{		sprintf(commonStringBuffer.buffer, "simple Lo: clustor:0x%000000008lx, secter 0d%002d, entryOffset:0x%002x", (*dirEntryInfo).entryInfo.location.clustor,  (*dirEntryInfo).entryInfo.location.secterInClustor, (*dirEntryInfo).entryInfo.entryNumberOrOffset);
-		sendString(commonStringBuffer.buffer);
+{		sprintf(g_strBuf.buffer, "simple Lo: clustor:0x%000000008lx, secter 0d%002d, entryOffset:0x%002x", (*dirEntryInfo).entryInfo.location.clustor,  (*dirEntryInfo).entryInfo.location.secterInClustor, (*dirEntryInfo).entryInfo.entryNumberOrOffset);
+		sendString(g_strBuf.buffer);
 
-		sprintf(commonStringBuffer.buffer, "size 0x%000000008lx, attribute 0x%002x, entry indicate:0x%000000008lx", (*dirEntryInfo).dirStructure.otherInfo.fileSize, (*dirEntryInfo).dirStructure.otherInfo.attribute, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "size 0x%000000008lx, attribute 0x%002x, entry indicate:0x%000000008lx", (*dirEntryInfo).dirStructure.otherInfo.fileSize, (*dirEntryInfo).dirStructure.otherInfo.attribute, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor);
+		sendString(g_strBuf.buffer);
 		
 		//sprintf(buffer ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
 		//putStringInGlcdAtPage(PAGE7, buffer);
@@ -6393,8 +6393,8 @@ void sendDirectoryAndFileEntryInfomation2(directoryAndFileEntryInformation *dirE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendDirectoryAndFileEntryInfomation3(directoryAndFileEntryInformation *dirEntryInfo)
 {
-		sprintf(commonStringBuffer.buffer, "Long Loc: Clustor:0x%000000008lx, secter:0d%002d, entryOffset:0x%002x", (*dirEntryInfo).entryInfo.longNameLocation.clustor, (*dirEntryInfo).entryInfo.longNameLocation.secterInClustor, (*dirEntryInfo).entryInfo.longNameEntryOffset);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "Long Loc: Clustor:0x%000000008lx, secter:0d%002d, entryOffset:0x%002x", (*dirEntryInfo).entryInfo.longNameLocation.clustor, (*dirEntryInfo).entryInfo.longNameLocation.secterInClustor, (*dirEntryInfo).entryInfo.longNameEntryOffset);
+		sendString(g_strBuf.buffer);
 
 		//sprintf(buffer ,"empty C.L 0x%000000008lx", findEmptyClustor(&sdCardInfo, &clustor, (*dirEntryInfo).dirStructure.otherInfo.indicateFirstClustor));
 		//putStringInGlcdAtPage(PAGE7, buffer);
@@ -6452,8 +6452,8 @@ int main()
 
 		sendStringOnly("Path:");
 		sendString(cmdStringNowLocationName);
-		sprintf(commonStringBuffer.buffer, "Clus:0x%lx", cmdClustorLocation);
-		sendString(commonStringBuffer.buffer);
+		sprintf(g_strBuf.buffer, "Clus:0x%lx", cmdClustorLocation);
+		sendString(g_strBuf.buffer);
 		sendStringOnly("$ ");
 
 		receiveString(cmd);
@@ -6464,8 +6464,8 @@ int main()
 		
 		for(i=0; i<MAXIMUM_CMD_ARGS_NUM; i++)
 		{
-			sprintf(commonStringBuffer.buffer,"args[%d]:", i);
-			sendStringOnly(commonStringBuffer.buffer);
+			sprintf(g_strBuf.buffer,"args[%d]:", i);
+			sendStringOnly(g_strBuf.buffer);
 			sendStringOnly((*(cmdArgs+i)));
 			sendCharOnly(' ');
 			
@@ -6483,8 +6483,8 @@ int main()
 			{
 				if((cmdResult=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, *(cmdArgs+1))))
 				{
-					sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-					sendStringOnly(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "%d:", cmdResult);
+					sendStringOnly(g_strBuf.buffer);
 					sendString("directory is not found!");
 					// sendDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 					// sendDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
@@ -6497,8 +6497,8 @@ int main()
 											// sendDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 											// sendDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
 											// sendDirectoryAndFileEntryInfomation3(&(fileBrowserData.findEntry));
-											// sprintf(commonStringBuffer.buffer, "BeBefClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
-											// sendString(commonStringBuffer.buffer);
+											// sprintf(g_strBuf.buffer, "BeBefClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
+											// sendString(g_strBuf.buffer);
 					// if(!strcmp(*(cmdArgs+1), "."))
 					// {
 						// if((fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor)
@@ -6534,15 +6534,15 @@ int main()
 					{
 						if((fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor!=0)
 						{
-													// sprintf(commonStringBuffer.buffer, "BefClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
-													// putStringInGlcdAtPage(PAGE3, commonStringBuffer.buffer);
-													// sendString(commonStringBuffer.buffer);
+													// sprintf(g_strBuf.buffer, "BefClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
+													// putStringInGlcdAtPage(PAGE3, g_strBuf.buffer);
+													// sendString(g_strBuf.buffer);
 
 							cmdClustorLocation=(fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor;
 
-													// sprintf(commonStringBuffer.buffer, "AftClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
-													// putStringInGlcdAtPage(PAGE4, commonStringBuffer.buffer);
-													// sendString(commonStringBuffer.buffer);
+													// sprintf(g_strBuf.buffer, "AftClus:0x%lx, %lx", cmdClustorLocation, (fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor);
+													// putStringInGlcdAtPage(PAGE4, g_strBuf.buffer);
+													// sendString(g_strBuf.buffer);
 							strcpy(cmdStringNowLocationName, *(cmdArgs+1));
 						}
 						else
@@ -6572,8 +6572,8 @@ int main()
 				if((cmdResult=createNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, ATTR_DIRECTORY, *(cmdArgs+1))))
 				// if(createNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, ATTR_DIRECTORY, mkdirDirectoryBuffer))
 				{
-					sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-					sendStringOnly(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "%d:", cmdResult);
+					sendStringOnly(g_strBuf.buffer);
 
 					sendString("directory name is already exist!");
 				}
@@ -6593,8 +6593,8 @@ int main()
 				if((cmdResult=createNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, ATTR_ARCHIVE, *(cmdArgs+1))))
 				// if(createNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, ATTR_ARCHIVE, mkdirDirectoryBuffer))
 				{
-					sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-					sendStringOnly(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "%d:", cmdResult);
+					sendStringOnly(g_strBuf.buffer);
 
 					sendString("directory name is already exist!");
 				}
@@ -6611,8 +6611,8 @@ int main()
 //				if(findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, *(cmdArgs+1)))
 				if((cmdResult=findDirEntryAndDeleteUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation,  *(cmdArgs+1))))
 				{
-					sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-					sendStringOnly(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "%d:", cmdResult);
+					sendStringOnly(g_strBuf.buffer);
 
 					sendString("delete dir or file fail!");
 				}
@@ -6622,12 +6622,12 @@ int main()
 		{
 				if((cmdResult=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, *(cmdArgs+1))))
 				{
-					sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-					sendStringOnly(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "%d:", cmdResult);
+					sendStringOnly(g_strBuf.buffer);
 
 					sendStringOnly("cannot find ");
-					sprintf(commonStringBuffer.buffer, "=> %s", *(cmdArgs+1));
-					sendString(commonStringBuffer.buffer);
+					sprintf(g_strBuf.buffer, "=> %s", *(cmdArgs+1));
+					sendString(g_strBuf.buffer);
 					
 				}
 				else
@@ -6641,12 +6641,12 @@ int main()
 		{
 			if((cmdResult=putPasteWritingInFileIfNotCreateNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, cmdClustorLocation, *(cmdArgs+1), *(cmdArgs+2), EndOfTextFile)))
 			{
-				sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-				sendStringOnly(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "%d:", cmdResult);
+				sendStringOnly(g_strBuf.buffer);
 
 				sendStringOnly("cannot file write ");
-				sprintf(commonStringBuffer.buffer, "=> %s", *(cmdArgs+1));
-				sendString(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "=> %s", *(cmdArgs+1));
+				sendString(g_strBuf.buffer);
 			}
 			else
 			{
@@ -6657,12 +6657,12 @@ int main()
 		{
 			if((cmdResult=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, *(cmdArgs+1))))
 			{
-				sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-				sendStringOnly(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "%d:", cmdResult);
+				sendStringOnly(g_strBuf.buffer);
 
 				sendStringOnly("cannot find file ");
-				sprintf(commonStringBuffer.buffer, "=> %s", *(cmdArgs+1));
-				sendString(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "=> %s", *(cmdArgs+1));
+				sendString(g_strBuf.buffer);
 			}
 			else
 			{
@@ -6676,21 +6676,21 @@ int main()
 		{
 			if((cmdResult=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), cmdClustorLocation, *(cmdArgs+1))))
 			{
-				sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-				sendStringOnly(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "%d:", cmdResult);
+				sendStringOnly(g_strBuf.buffer);
 
 				sendStringOnly("cannot find file ");
-				sprintf(commonStringBuffer.buffer, "=> %s", *(cmdArgs+1));
-				sendString(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "=> %s", *(cmdArgs+1));
+				sendString(g_strBuf.buffer);
 			}
 			else if((fileBrowserData.findEntry).dirStructure.otherInfo.indicateFirstClustor==0)
 			{
-				sprintf(commonStringBuffer.buffer, "%d:", cmdResult);
-				sendStringOnly(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "%d:", cmdResult);
+				sendStringOnly(g_strBuf.buffer);
 
 				sendStringOnly("file is not have indicate clustor ");
-				sprintf(commonStringBuffer.buffer, "=> %s", *(cmdArgs+1));
-				sendString(commonStringBuffer.buffer);
+				sprintf(g_strBuf.buffer, "=> %s", *(cmdArgs+1));
+				sendString(g_strBuf.buffer);
 			}
 			else
 			{
@@ -6698,7 +6698,7 @@ int main()
 				/*get value from ADC #0*/
 				SPI_ADC_Init();
 
-				sprintf(commonStringBuffer.buffer ,
+				sprintf(g_strBuf.buffer ,
 				"%0000006d,ADC%d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d", 
 				(0x00001FFF&rand()),(0), 
 				getAdcValue(SPI_MODE_ADC0, 0, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
@@ -6710,16 +6710,16 @@ int main()
 				getAdcValue(SPI_MODE_ADC0, 6, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
 				getAdcValue(SPI_MODE_ADC0, 7, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES)
 				);
-				sendString(commonStringBuffer.buffer);
+				sendString(g_strBuf.buffer);
 
 				SPI_SD_CARD_Init(SPI_MODE_SD_CARD);
-				putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, commonStringBuffer.buffer, EndOfTextFile);
+				putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, g_strBuf.buffer, EndOfTextFile);
 
 
 				/*get value from ADC #1*/
 				SPI_ADC_Init();
 
-				sprintf(commonStringBuffer.buffer ,
+				sprintf(g_strBuf.buffer ,
 				"%0000006d,ADC%d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d", 
 				(0x00001FFF&rand()),(1), 
 				getAdcValue(SPI_MODE_ADC1, 0, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
@@ -6731,11 +6731,11 @@ int main()
 				getAdcValue(SPI_MODE_ADC1, 6, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
 				getAdcValue(SPI_MODE_ADC1, 7, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES)
 				 );
-				sendString(commonStringBuffer.buffer);
+				sendString(g_strBuf.buffer);
 
 
 				SPI_SD_CARD_Init(SPI_MODE_SD_CARD);
-				putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, commonStringBuffer.buffer, EndOfTextFile);
+				putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, g_strBuf.buffer, EndOfTextFile);
 
 				sendString("----- GET ADC#0, #1 VALUES END -----");
 			}
@@ -6767,7 +6767,7 @@ int main()
 			/*get value from ADC #0*/
 			SPI_ADC_Init();
 
-			sprintf(commonStringBuffer.buffer ,
+			sprintf(g_strBuf.buffer ,
 			"%0000006d,ADC%d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d", 
 			(0x00001FFF&rand()),(0), 
 			getAdcValue(SPI_MODE_ADC0, 0, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
@@ -6781,13 +6781,13 @@ int main()
 			);
 
 			SPI_SD_CARD_Init(SPI_MODE_SD_CARD);
-			putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, commonStringBuffer.buffer, EndOfTextFile);
+			putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, g_strBuf.buffer, EndOfTextFile);
 
 
 			/*get value from ADC #1*/
 			SPI_ADC_Init();
 
-			sprintf(commonStringBuffer.buffer ,
+			sprintf(g_strBuf.buffer ,
 			"%0000006d,ADC%d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d,%00004d", 
 			(0x00001FFF&rand()),(1), 
 			getAdcValue(SPI_MODE_ADC1, 0, 10, ADC_DEFAULT_JUNK_SAMPLING_TIMES), 
@@ -6801,7 +6801,7 @@ int main()
 			 );
 
 			SPI_SD_CARD_Init(SPI_MODE_SD_CARD);
-			putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, commonStringBuffer.buffer, EndOfTextFile);
+			putPasteWritingInFile(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), &fileAccessInfo, g_strBuf.buffer, EndOfTextFile);
 		}
 	}
 ////////////////////////////////////////////////////* get Adc Value example and write sd-card end *////////////////////////////////////////////////////
