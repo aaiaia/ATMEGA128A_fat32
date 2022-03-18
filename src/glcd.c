@@ -5,7 +5,7 @@
 	default write function
 */
 void glcdWriteCommon(unsigned char control, unsigned char commandOrData)
-{	
+{
 /*
 	waiting process START
 */
@@ -86,7 +86,7 @@ void glcdWriteCommon(unsigned char control, unsigned char commandOrData)
 */
 unsigned char glcdReadByteCommon
 	(
-		unsigned char columnOffset, 
+		unsigned char columnOffset,
 		unsigned char commandOfReadingStatusOrdata
 	)
 {
@@ -222,7 +222,7 @@ void getGlcdByteArrayDataAtPage(unsigned char pageOffset, unsigned char *savedCh
 
 	glcdWriteCommon(CONTROL_CS0, (INST_DEFAULT_PAGE_START+pageOffset));
 	glcdWriteCommon(CONTROL_CS0, INST_DEFAULT_COLUMN_START);
-	
+
 	//glcdWriteCommon(CONTROL_CS1, INST_DEFAULT_COLUMN_START);
 
 	glcdReadByteCommon(columnOffset, CONTROL_READ_DATA_CS1);//dummy
@@ -241,7 +241,7 @@ void getGlcdByteArrayDataAtPage(unsigned char pageOffset, unsigned char *savedCh
 	{
 		savedCharArray[columnOffset] = glcdReadByteCommon(columnOffset, CONTROL_READ_DATA_CS2);
 	}
-	
+
 	savedCharArray[columnOffset++] = '\0';
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ void reversePage(unsigned char pageOffset)
 {
 	unsigned char temp[LCD_PENAL_LENGTH+1] = {0};
 	unsigned char i;
-	
+
 	getGlcdByteArrayDataAtPage(pageOffset, temp);
 
 	for(i=0; i<LCD_PENAL_LENGTH; i++)
@@ -291,7 +291,7 @@ void putUpOnDotGlcdAxis(unsigned char axisOfX, unsigned char axisOfY)
 		(
 			(1<<(axisOfY%PAGE_HEIGHT))
 			|
-			getByteFromGlcd((axisOfY/PAGE_HEIGHT), axisOfX)	
+			getByteFromGlcd((axisOfY/PAGE_HEIGHT), axisOfX)
 		)
 	);
 }
@@ -357,15 +357,15 @@ void putByteDataGlcd(unsigned char pageOffset,unsigned char columnOffset, unsign
 */
 void overwriteByteArrayDataInGlcdToPage
 	(
-		unsigned char pageOffset, 
-		unsigned char *dataArray, 
+		unsigned char pageOffset,
+		unsigned char *dataArray,
 		unsigned char arrayOrStringOrPictureLength
 	)//dataArray is same that char Array.
 {
 	unsigned char columnOffset=0;//this variable is same dataArrayIndex
 	glcdWriteCommon(CONTROL_CS0, INST_DEFAULT_PAGE_START + pageOffset);
 
-	glcdWriteCommon(CONTROL_CS1, INST_DEFAULT_COLUMN_START);	
+	glcdWriteCommon(CONTROL_CS1, INST_DEFAULT_COLUMN_START);
 	while((columnOffset<LCD_PENAL_SECTION_LENGTH)&&(columnOffset<arrayOrStringOrPictureLength))
 //	while((columnOffset<LCD_PENAL_SECTION_LENGTH)&&(dataArray[columnOffset]!='\0'))
 //	for(columnOffset=0; ((columnOffset<LCD_PENAL_SECTION_LENGTH)&&(dataArray[columnOffset]!='\0')); columnOffset++)//
@@ -382,7 +382,7 @@ void overwriteByteArrayDataInGlcdToPage
 //	for(columnOffset=columnOffset; ((columnOffset<LCD_PENAL_SECTION_LENGTH*2)&&(dataArray[columnOffset]!='\0')); columnOffset++)
 //	for(columnOffset=columnOffset; ((columnOffset<LCD_PENAL_SECTION_LENGTH*2)&&(columnOffset<=(sizeof(dataArray)/sizeof(unsigned char)))); columnOffset++)
 	{
-		glcdWriteCommon(CONTROL_WRITE_DATA_CS2, dataArray[columnOffset++]);		
+		glcdWriteCommon(CONTROL_WRITE_DATA_CS2, dataArray[columnOffset++]);
 	}
 	/*After Maintain*/
 }
@@ -390,9 +390,9 @@ void overwriteByteArrayDataInGlcdToPage
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void overWriteByteArrayDataInGlcdSetStartColumnOffsetToPage
 	(
-		unsigned char pageOffset, 
+		unsigned char pageOffset,
 		unsigned char startColumnOffset,
-		unsigned char *dataArray, 
+		unsigned char *dataArray,
 		unsigned char arrayOrStringOrPictureLength
 	)//dataArray is same that char Array.
 {
@@ -489,7 +489,7 @@ void overwriteStringInGlcdAtPageAddressSetStartColumnOffsetToPage(unsigned char 
 	}
 	else
 	{
-		glcdWriteCommon(CONTROL_CS2, INST_DEFAULT_COLUMN_START + setColumnOffset - (LCD_PENAL_LENGTH / 2));		
+		glcdWriteCommon(CONTROL_CS2, INST_DEFAULT_COLUMN_START + setColumnOffset - (LCD_PENAL_LENGTH / 2));
 	}
 
 	glcdWriteCommon(CONTROL_CS0, INST_DEFAULT_LINE_START);
@@ -581,13 +581,12 @@ void putStringInGlcdAtPageUsingOffset(unsigned char page, char *p, unsigned char
 unsigned char getUsingdoubleToBarGraphAltitude(double value)//¸·´ë ±×·¡ÇÁÀÇ ±æÀÌ(³ôÀÌ)¸¦ ±¸ÇÔ
 {
    unsigned char barGraphAltitude = (unsigned char)((double)(value)/ONE_CELL_IS);//ÇÑ Ä­´ç ³ªÅ¸³¾ ¼ö ÀÖ´Â ¼ýÀÚÀÇ ¹üÀ§·Î ³ª´²¼­ ÃÑ °¹¼ö¸¦ ±¸ÇÔ
- 
- 
+
    if( ((double)value-barGraphAltitude) > (ONE_CELL_IS/2.0) )//ÇÑ Ä­ÀÌ ³ªÅ¸³¾ ¼ö ÀÖ´Â ¹üÀ§ÀÇ Àý¹Ýº¸´Ù ³ôÀ¸¸é +1Ä­
    {
       barGraphAltitude++;
    }
- 
+
    return barGraphAltitude;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -597,14 +596,14 @@ void getBarGraphComplementAddressAndPage
 		unsigned char *dotChangeStartPageAddr,
 		unsigned char *dotChangeLineAddr,
 		unsigned char *numberOfOneBitPosition
-	)//
+	)
 {
 	//tempBlankSectionÀº 0xC0ºÎÅÍ ½ÃÀÛÇÏ´Â °ªÀÌ 0ÀÎ ÁöÁ¡ÀÇ ±æÀÌ¸¦ ¾ê±âÇÔ
 	unsigned char tempBlankSection = ((PAGE4_TO_LINE_ADDR + 0x07) - barGraphAltitude);
 
 	//0ÀÎ ±æÀÌÀÇ /8(ÇÑ ÆäÀÌÁöÀÇ bit °³ ¼ö)À» ÇÏ¸é, 0->1·Î ¹Ù²î´Â pageÀÇ -1 page ÁÖ¼Ò(Page address)°¡ ³ª¿È. µû¶ó¼­ +1 ½ÃÄÑÁÜ
    *dotChangeStartPageAddr  = PAGE1 + ((tempBlankSection / 0x08) + 0x01);
-   
+
    //0ÀÎ ºÎºÐÀÇ ±æÀÌ¸¦ % 8ÇÏ¸é, Èò ºÎºÐÀÇ bitÀ§Ä¡°¡ ³ªÅ¸³². ¿¹¿Ü´Â pageÀÇ °æ°è¿¡ °É¸± °æ¿ì. ÀÌ´Â %8 ÀÌ 0ÀÌ µÇ¾úÀ½À» ³ªÅ¸³½´Ù.
    //¶ÇÇÑ À§ÀÇ page addrÀ» ±¸ÇÏ´Â ºÎºÐ¿¡¼­´Â µü ³ª´©¾î ¶³¾îÁö´Â °æ¿ì(pageÀÇ °æ°è¿¡¼­ °É¸° °æ¿ì), Á¤È®È÷ ³ª´©¾î ¶³¾îÁö±â ¶§¹®¿¡ ¿¹¿ÜÃ³¸®¸¦ ÇÏÁö ¾Ê¾Æµµ µÊ
 	//¸¶Ä£°¡Áö·Î, 0ÀÎ ºÎºÐÀÌ ÇØ´ç ÆäÀÌÁö¿¡¼­ ¹Ýµå½Ã Á¸ÀçÇØ¾ßÇÏ¹Ç·Î(¿À·ùÀÇ °¡´É¼ºÀÌ ÀÖÀ»Áöµµ)
