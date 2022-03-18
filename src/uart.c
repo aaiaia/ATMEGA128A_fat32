@@ -102,7 +102,7 @@ void sendStringOnly(char *p)
 
 	// return p;
 // }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void sendString(char *p)
 {
 	while(*p != '\0')
@@ -113,6 +113,7 @@ void sendString(char *p)
 	}
 	sendCommon();
 }
+
 char* receiveString(char *p)
 {
 	do
@@ -126,12 +127,14 @@ char* receiveString(char *p)
 
 	return p;
 }
+
 void sendChar(char p)
 {
 	UDR0 = p;
 	while (!(UCSR0A & SEND_IS_DONE));
 	sendCommon();
 }
+
 void sendCharOnly(char p)
 {
 	UDR0 = p;

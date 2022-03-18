@@ -116,4 +116,13 @@ UBRR Formula(U2X=1): UBRR = (f_osc / 8*BAUR_RATE)-1
 	while (!(UCSR0A & SEND_IS_DONE));	\
 }
 
+void initUsart0();
+void sendCommon();
+void sendStringOnly(char *p);
+// char* receiveStringOnly(char *p);
+void sendString(char *p);
+char* receiveString(char *p);
+void sendChar(char p);
+void sendCharOnly(char p);
+
 #endif
