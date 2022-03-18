@@ -53,6 +53,8 @@ unsigned char testFlag = 0;
 //X * Y -> Y * X example 8 * 5 -> FONT_SIZE_X == 8, FONT_SIZE_Y == 5
 #define FONT_SIZE_X						0x08
 #define FONT_SIZE_Y						0x05
+
+#define FRONT_CHAR_BLANK				0x01
 //#define CHAR_BLANK_CHAR//don't enter value
 
 #define FONT_5X8_OFFSET		(FONT_SIZE_Y + FRONT_CHAR_BLANK)
@@ -206,8 +208,6 @@ const char ENGLISH_FONT_5X8[][FONT_SIZE_Y] = {
 //LCD
 #define BOTH_SIDE_BLANK					0x00
 #define BOTH_SIDE_COLOR					0x00//0x00 WHITE, 0xFF BLACK
-
-#define FRONT_CHAR_BLANK				0x01
 
 #define LCD_NUMBER_OF_CHIP				0x02
 
