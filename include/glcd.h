@@ -218,15 +218,6 @@ int englishFontFinder(char c);
 void putStringInGlcdAtPageAddress(unsigned char page, char *p);
 void putStringInGlcdAtPage(unsigned char page, char *p);//programmer can use this function with page address or page offset
 unsigned char getUsingdoubleToBarGraphAltitude(double value);//¸·´ë ±×·¡ÇÁÀÇ ±æÀÌ(³ôÀÌ)¸¦ ±¸ÇÔ
-void getBarGraphComplementAddressAndPage
-	(
-		unsigned char barGraphAltitude,
-		unsigned char *dotChangeStartPageAddr,
-		unsigned char *dotChangeLineAddr,
-		unsigned char *numberOfOneBitPosition
-	);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 	used to touch penal calibration, GLCD structure.
 */
