@@ -16,4 +16,7 @@
 #define KEY_IN_BOTTOM			4
 #define KEY_IN_BOTTON_PORT		PIND
 
+void reInitKeyPad();
+unsigned char nextSequence();
+
 #endif
