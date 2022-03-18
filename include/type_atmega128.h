@@ -1,7 +1,6 @@
 #ifndef _TYPE_ATMEGA128_H_
 #define _TYPE_ATMEGA128_H_
 
-
 #define SIGNED_8BITS	(signed char)
 #define SIGNED_16BITS	(signed int)
 #define SIGNED_32BITS	(signed long)
