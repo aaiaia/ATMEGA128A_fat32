@@ -19,7 +19,7 @@
 struct stringBuffer
 {
 	char dat[STRING_BUFFER_SIZE];
-	char *bufferPointer;
+	char *loc;
 	char bufferDirection;
 }typedef stringBuffer;
 
@@ -5245,7 +5245,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 	}
 	else
 	{//no//find next secter in same clustor or next clustor is empty.
-		if( (writingPositionInSdCard+writingStringOccupiedSizeMain)<((*clustor).secterData.data+SD_DATA_BUFFER_SIZE) )//writingStringOccupiedSize=strlen(g_strBuf.bufferPointer)+strlen(pastedTailString);
+		if( (writingPositionInSdCard+writingStringOccupiedSizeMain)<((*clustor).secterData.data+SD_DATA_BUFFER_SIZE) )//writingStringOccupiedSize=strlen(g_strBuf.loc)+strlen(pastedTailString);
 		{
 			strncpy(writingPositionInSdCard, pastedString, writingStringOccupiedSizeMain);
 			pastedString+=writingStringOccupiedSizeMain;
@@ -5584,14 +5584,14 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				*/
 				if(g_strBuf.bufferDirection == 'F')
 				{
-					count=(g_strBuf.bufferPointer-g_strBuf.dat);
+					count=(g_strBuf.loc-g_strBuf.dat);
 				}
 				else if(g_strBuf.bufferDirection == 'R')
 				{
-					count=(g_strBuf.dat+STRING_BUFFER_SIZE-2)-g_strBuf.bufferPointer;
+					count=(g_strBuf.dat+STRING_BUFFER_SIZE-2)-g_strBuf.loc;
 				}
 				
-				// g_strBuf.bufferPointer=g_strBuf.dat;
+				// g_strBuf.loc=g_strBuf.dat;
 				/*
 				classify case.
 				1. no rest
@@ -5610,7 +5610,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 					if((dataFileInfoLength<readFileSize))
 					{
 						*(g_strBuf.dat + STRING_BUFFER_SIZE - 1) = 0;//End of char array reserved bytes.
-						g_strBuf.bufferPointer = (g_strBuf.dat+STRING_BUFFER_SIZE-2);//when calculate copied string length, (g_strBuf.dat+STRING_BUFFER_SIZE-2) is reference offset in reserve.
+						g_strBuf.loc = (g_strBuf.dat+STRING_BUFFER_SIZE-2);//when calculate copied string length, (g_strBuf.dat+STRING_BUFFER_SIZE-2) is reference offset in reserve.
 						g_strBuf.bufferDirection='R';
 
 					
@@ -5648,15 +5648,15 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 							for(;!(str<(*searchingSecterBuffer).secterData.data);)
 							{
-								*(g_strBuf.bufferPointer)=*(str);//copy.
+								*(g_strBuf.loc)=*(str);//copy.
 
-								if( (g_strBuf.bufferPointer != (g_strBuf.dat + STRING_BUFFER_SIZE - 2)) && (*(g_strBuf.bufferPointer)==0x0a) )//always 0x0a is located tail of data set.
+								if( (g_strBuf.loc != (g_strBuf.dat + STRING_BUFFER_SIZE - 2)) && (*(g_strBuf.loc)==0x0a) )//always 0x0a is located tail of data set.
 								{
 									break;
 								}
 								else
 								{
-									g_strBuf.bufferPointer--;
+									g_strBuf.loc--;
 									str--;
 								}
 							}
@@ -5664,9 +5664,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 							
 							
 						}
-						while((((*searchingSecterBuffer).locatedClustor!=(*p).dirStructure.otherInfo.indicateFirstClustor)||((*searchingSecterBuffer).secterInClustor!=0))&&(*(g_strBuf.bufferPointer)!=0x0a));//direction is reverse.
+						while((((*searchingSecterBuffer).locatedClustor!=(*p).dirStructure.otherInfo.indicateFirstClustor)||((*searchingSecterBuffer).secterInClustor!=0))&&(*(g_strBuf.loc)!=0x0a));//direction is reverse.
 
-						displayPointer = (g_strBuf.bufferPointer + 1);
+						displayPointer = (g_strBuf.loc + 1);
 
 						break;
 					}
@@ -5682,7 +5682,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				/*Read file size is can't exceed file size.*/
 				if((*p).dirStructure.otherInfo.fileSize<=readFileSize) continue;
 				/*data abstract*/
-				g_strBuf.bufferPointer=g_strBuf.dat;
+				g_strBuf.loc=g_strBuf.dat;
 				g_strBuf.bufferDirection='F';
 
 				
@@ -5716,18 +5716,18 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 					
 					for(;str<(((*searchingSecterBuffer).secterData).data+SD_DATA_BUFFER_SIZE);str++)
 					{
-						*(g_strBuf.bufferPointer)=*(str);//copy.
+						*(g_strBuf.loc)=*(str);//copy.
 
-						if(*(g_strBuf.bufferPointer-1)==0x0a)
+						if(*(g_strBuf.loc-1)==0x0a)
 						{
-							*(g_strBuf.bufferPointer)=0;
-							readFileSize+=(g_strBuf.bufferPointer-g_strBuf.dat);
+							*(g_strBuf.loc)=0;
+							readFileSize+=(g_strBuf.loc-g_strBuf.dat);
 							break;
 						}
-						g_strBuf.bufferPointer++;
+						g_strBuf.loc++;
 					}
 				}
-				while((((*searchingSecterBuffer).nextClustor!=CLUSTOR_IS_END)||((*searchingSecterBuffer).secterInClustor<(*diskInfo).secterPerClustor))&&(*(g_strBuf.bufferPointer-1)!=0x0a));//direction is forward.
+				while((((*searchingSecterBuffer).nextClustor!=CLUSTOR_IS_END)||((*searchingSecterBuffer).secterInClustor<(*diskInfo).secterPerClustor))&&(*(g_strBuf.loc-1)!=0x0a));//direction is forward.
 
 				displayPointer = (g_strBuf.dat);				
 				break;
