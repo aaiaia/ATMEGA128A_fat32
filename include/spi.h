@@ -1,14 +1,5 @@
 #ifndef _SPI_H
 #define _SPI_H
-/*
-	description of SPI communication mode
-*/
-#define SPI_MODE_SD_CARD	0x00
-#define SPI_MODE_ADC0		0x01
-#define SPI_MODE_ADC1		0x02
-#define SPI_MODE_TOUCH		0x03
-
-#define GET_ADC_PORT_INSTRUCTION(adcAddr)		(adcAddr<<3)//that is instruction of ADC128S102.
 //#define TRANSCEIVE_SPI_DATA(data)	( SPDR=data; while(!(SPCR&(1<<SPIF))); )
 
 #define SPI_DDR				DDRB
@@ -39,6 +30,16 @@
 #define SPI_ADC_SPSR_SET					(SPSR = (1<<SPI2X))
 
 #define DEVICE_SELECTOR_T_pd	1//us
+
+/*
+	description of SPI communication mode
+*/
+#define SPI_MODE_SD_CARD	0x00
+#define SPI_MODE_ADC0		0x01
+#define SPI_MODE_ADC1		0x02
+#define SPI_MODE_TOUCH		0x03
+
+#define GET_ADC_PORT_INSTRUCTION(adcAddr)		(adcAddr<<3)//that is instruction of ADC128S102.
 
 unsigned char SPI_Master_Init();
 unsigned char spiTransCeive(unsigned char transferDeviceCommand);
