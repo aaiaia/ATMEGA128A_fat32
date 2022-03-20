@@ -31,6 +31,11 @@
 
 #define DEVICE_SELECTOR_T_pd	1//us
 
+unsigned char SPI_Master_Init();
+unsigned char spiTransCeive(unsigned char transferDeviceCommand);
+unsigned char spiTransfer(unsigned char data);
+unsigned char spiReceive();
+
 /*
 	description of SPI communication mode
 */
@@ -39,12 +44,6 @@
 #define SPI_MODE_ADC1		0x02
 #define SPI_MODE_TOUCH		0x03
 
-#define GET_ADC_PORT_INSTRUCTION(adcAddr)		(adcAddr<<3)//that is instruction of ADC128S102.
-
-unsigned char SPI_Master_Init();
-unsigned char spiTransCeive(unsigned char transferDeviceCommand);
-unsigned char spiTransfer(unsigned char data);
-unsigned char spiReceive();
 void spiDeviceHold(unsigned char spiDeviceNumber);
 void spiDeviceRelease();
 
