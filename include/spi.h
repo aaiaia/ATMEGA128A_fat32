@@ -35,7 +35,6 @@
 #define SPI_SD_CARD_SPCR_SET				(SPCR = ((1<<SPE)|(1<<MSTR)))
 #define SPI_ADC_SPCR_SET					(SPCR = ((1<<SPE)|(1<<MSTR)|(1<<CPOL)|(1<<CPHA)))
 
-
 #define SPI_SD_CARD_SPSR_SET_HIGH_SPEED		(SPSR = (1<<SPI2X))
 #define SPI_ADC_SPSR_SET					(SPSR = (1<<SPI2X))
 
