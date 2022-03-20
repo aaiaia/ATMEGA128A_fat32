@@ -24,27 +24,27 @@
 #define set_ds1302_sclk()     DS1302_PORT|=1<<DS1302_SCLK_PIN_NO      // set the clock terminal
 #define clr_ds1302_sclk()     DS1302_PORT&=~(1<<DS1302_SCLK_PIN_NO)   //
 
-#define ds1302_sec_add 		0x80 // second data address
-#define ds1302_min_add 		0x82 // address of data points
-#define ds1302_hr_add 		0x84 // when the data address
-#define ds1302_date_add 		0x86 // address of daily data
-#define ds1302_month_add 	0x88 // address on the data
-#define ds1302_day_add 		0x8a // week data address
-#define ds1302_year_add 		0x8c // address data for the year
-#define ds1302_control_add 	0x8e // control data address
-#define ds1302_charger_add 	0x90
-#define ds1302_clkburst_add 	0xbe
-#define sbi(port, bit) 				(port |= (1<<bit))
-#define cbi(port, bit) 				(port &= (~(1<<bit)))
-#define inp(port, bit) 				(port & (1<<bit))
+#define ds1302_sec_add		0x80 // second data address
+#define ds1302_min_add		0x82 // address of data points
+#define ds1302_hr_add		0x84 // when the data address
+#define ds1302_date_add		0x86 // address of daily data
+#define ds1302_month_add	0x88 // address on the data
+#define ds1302_day_add		0x8a // week data address
+#define ds1302_year_add		0x8c // address data for the year
+#define ds1302_control_add	0x8e // control data address
+#define ds1302_charger_add	0x90
+#define ds1302_clkburst_add	0xbe
+#define sbi(port, bit)				(port |= (1<<bit))
+#define cbi(port, bit)				(port &= (~(1<<bit)))
+#define inp(port, bit)				(port & (1<<bit))
 #define CLI() cli()
 #define SEI() sei()
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 typedef unsigned char		byte;
 typedef unsigned char		u8;
 typedef signed int			s16;
 typedef unsigned int		u16;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void bsp_ds1302_gpio_init(void);
 void ds1302_write(byte add , byte data);
 byte ds1302_read(byte add);
@@ -57,6 +57,5 @@ void delay_us(u16 us);
 void ds1302_DataView(byte set_time[]);
 void eeprom_store1(unsigned char line2);
 void eeprom_store2(unsigned char line1);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

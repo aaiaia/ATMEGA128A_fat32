@@ -1,6 +1,6 @@
 #include "rtc.h"
 
-void bsp_ds1302_gpio_init(void)		  
+void bsp_ds1302_gpio_init(void)
 {
 	//  the clock terminal (RTC_CLK) data terminal (RTC_DATA) Chip select (RTC_CS) is set to output
 	DS1302_DDR |=_BV(DS1302_SCLK_PIN_NO)|_BV(DS1302_IO_PIN_NO)|_BV(DS1302_RST_PIN_NO);
@@ -13,52 +13,52 @@ Parameters: REG - address value (register or RAM)
 data - to be written
 Return Value: None
 *******************************************/
-void ds1302_write(unsigned char add , unsigned char data) 
-{ 
-	unsigned char i=0; 
-	
+void ds1302_write(unsigned char add , unsigned char data)
+{
+	unsigned char i=0;
+
 	set_ds1302_io_ddr();     // configure the IO is the output
-	delay_us(2); 
+	delay_us(2);
 	clr_ds1302_rst();        // clear reset, stop all operations
-	delay_us(2); 
+	delay_us(2);
 	clr_ds1302_sclk();       // clear the clock, ready to operate
-	delay_us(2); 
+	delay_us(2);
 	set_ds1302_rst();        // set reset to start operation
-	delay_us(2); 
-	
+	delay_us(2);
+
 	for(i=8;i>0;i--)         // This loop writes the control code
-	{ 
+	{
 		if(add&0x01)
 			set_ds1302_io();     // this bit is 1, set the data bits
 		else
-		  	clr_ds1302_io();     // this bit is 0, clear data bits
-		  	
-		delay_us(2); 
+			clr_ds1302_io();     // this bit is 0, clear data bits
+			
+		delay_us(2);
 		set_ds1302_sclk();     // generates a clock pulse, the write data
-		delay_us(2); 
-		clr_ds1302_sclk(); 
-		delay_us(2); 
+		delay_us(2);
+		clr_ds1302_sclk();
+		delay_us(2);
 		add>>=1;         // shift, ready to write the next one
-	} 
+	}
 	for(i=8;i>0;i--)      // write code for this recycling
-	{ 
+	{
 		if(data&0x01)
-			set_ds1302_io(); 
+			set_ds1302_io();
 		else
-	  		clr_ds1302_io(); 
-		
-	  	delay_us(2); 
-		set_ds1302_sclk(); 
-		delay_us(2); 
-		clr_ds1302_sclk(); 
-		delay_us(2); 
-		data>>=1; 
-	} 
-	
+			clr_ds1302_io();
+
+		delay_us(2);
+		set_ds1302_sclk();
+		delay_us(2);
+		clr_ds1302_sclk();
+		delay_us(2);
+		data>>=1;
+	}
+
 	clr_ds1302_rst(); 
-	delay_us(2); 
+	delay_us(2);
 	clr_ds1302_io_ddr();      // clear output state
-	delay_us(2); 
+	delay_us(2);
 }
 
 /*******************************************
@@ -68,59 +68,58 @@ Parameters: add - address value (register or RAM)
 Return Value: data - the data read out
 ********************************************/
 unsigned char ds1302_read(unsigned char add)
-{ 
-	unsigned char i=0,data=0; 
+{
+	unsigned char i=0,data=0;
 
 	add+=1;                  // read flag
 	set_ds1302_io_ddr();     // output ports
-	delay_us(2); 
+	delay_us(2);
 	clr_ds1302_rst();        // clear reset
-	delay_us(2); 
+	delay_us(2);
 	clr_ds1302_sclk();       // clear clock
-	delay_us(2); 
+	delay_us(2);
 	set_ds1302_rst();        // Set Reset
-	delay_us(2); 
-	
-	for(i=8;i>0;i--)         // This loop writes the address code
-	{ 
-		if(add&0x01)
-	 	{
-	  		set_ds1302_io();
-	 	} 
-		else
-	 	{
-	  	clr_ds1302_io();
-	 	}
+	delay_us(2);
 
-		delay_us(2); 
-		set_ds1302_sclk(); 
-		delay_us(2); 
-		clr_ds1302_sclk(); 
-		delay_us(2); 
-		add>>=1; 
-	} 
+	for(i=8;i>0;i--)         // This loop writes the address code
+	{
+		if(add&0x01)
+		{
+			set_ds1302_io();
+		}
+		else
+		{
+			clr_ds1302_io();
+		}
+
+		delay_us(2);
+		set_ds1302_sclk();
+		delay_us(2);
+		clr_ds1302_sclk();
+		delay_us(2);
+		add>>=1;
+	}
 	clr_ds1302_io_ddr();      // input port
 	delay_us(2); 
 	for(i=8;i>0;i--)         // This loop reads data from 1302
-	{ 
+	{
 		data>>=1; 
 		if(in_ds1302_io())
-	 	{
-	   		data|=0x80;
-	 	}
-		delay_us(2); 
-		set_ds1302_sclk(); 
-		delay_us(2); 
-		clr_ds1302_sclk(); 
-		delay_us(2); 
-	} 
-	
-	clr_ds1302_rst(); 
-	delay_us(2); 
-	
-	return(data); 
-	
-} 
+		{
+			data|=0x80;
+		}
+		delay_us(2);
+		set_ds1302_sclk();
+		delay_us(2);
+		clr_ds1302_sclk();
+		delay_us(2);
+	}
+
+	clr_ds1302_rst();
+	delay_us(2);
+
+	return(data);
+}
 
 /*******************************************
 Function name: check_DS1302
@@ -129,15 +128,15 @@ Parameters: None3
 
 Return Value: exist - to TRUE for the detection of the DS1302, as not detected to FALSE
 ********************************************/
- 	unsigned char check_ds1302(void) 
-{ 
-	ds1302_write(ds1302_control_add,0x80); 
-	
+unsigned char check_ds1302(void)
+{
+	ds1302_write(ds1302_control_add,0x80);
+
 	if(ds1302_read(ds1302_control_add)==0x80)
-		return 1; 
+		return 1;
 	
-	return 0; 
-} 
+	return 0;
+}
 
 /*******************************************
 Function name: DS1302_setT
@@ -148,18 +147,18 @@ Return Value: None
 void ds1302_set_time(unsigned char set_time[])
 {
 	unsigned char i;
-	unsigned char addr = 0x80; 		 //  seconds register write address from the beginning
+	unsigned char addr = 0x80;		//  seconds register write address from the beginning
 	
-	ds1302_write(ds1302_control_add|0x00,0x00); // control commands, allowing a write operation
-	delay_us(5000); 
+	ds1302_write(ds1302_control_add|0x00,0x00);	// control commands, allowing a write operation
+	delay_us(5000);
 	
 	for(i=0;i<7;i++)
 	{
-		ds1302_write(addr|0x00,set_time[i]);   // second week of sun and the moon in time-sharing
+		ds1302_write(addr|0x00,set_time[i]);	// second week of sun and the moon in time-sharing
 		addr+=2;
-		delay_us(1000); 
+		delay_us(1000);
 	}
-	ds1302_write(ds1302_control_add|0x00,0x80); 		// control commands, WP bit is 1, does not allow write operation
+	ds1302_write(ds1302_control_add|0x00,0x80);		// control commands, WP bit is 1, does not allow write operation
 }
 
 #if 0
@@ -170,7 +169,7 @@ Parameters: None
 Return Value: None
 ********************************************/
 void ds1302_write_time(void)
-{  
+{
 	ds1302_write(ds1302_control_add, 0x00); // close the write protection
 	
 	ds1302_write(ds1302_sec_add, 0x80); // pause
@@ -191,7 +190,7 @@ void ds1302_write_time(void)
 		eeprom_write(4,buffer[4]);
 	ds1302_write(ds1302_sec_add, ds1302_time[5]); // sec
 		eeprom_write(5,buffer[5]);
-	ds1302_write(ds1302_control_add, 0x80); // open write protection 
+	ds1302_write(ds1302_control_add, 0x80); // open write protection
 }
 
 #endif
@@ -215,8 +214,8 @@ Return Value: None
 	// }
 
 void bcd2ascii(byte BCD,byte ptasc[])
-{ 	
-	ptasc[0]= (BCD>>4) | 0x30;	 // convert ten
+{
+	ptasc[0]= (BCD>>4) | 0x30; // convert ten
 	ptasc[1] = BCD & 0x0F | 0x30;  // convert bits
 }
 
@@ -260,14 +259,9 @@ Return Value: None
 	// Char_Set_XY (1,0, "20"); // line 1 position from the 1st show, will appear as 2007 2007 in the form of
 	// Char_Set_XY (2,0, line1);
 	// Char_Set_XY (2,1, line2); // line 2 from the first two position display * /
-// #endif	
+// #endif
 // }
 // #endif
-
-
-
-
-
 
 // void ds1302_display_time(unsigned char set_time[])
 // {
@@ -277,7 +271,7 @@ Return Value: None
 	// int i=0;
 
 	// // for(i=0; i<10; i++)
-	// // {	
+	// // {
 	
 	// bcd2ascii (set_time[3], asc); // time
 	// line2[0] = asc[0];
@@ -342,17 +336,16 @@ Return Value: None
 	// putStringInGlcdAtPage(PAGE7, ">>Information");
 	// putStringInGlcdAtPage(PAGE8, " ");
 	// _delay_ms(500);
-  	
+
 	// }
   // }*/
 // }
 
-
-void delay_us(u16 us)		  
+void delay_us(u16 us)
 {
 	u16 i;
 	for( i=0;i<us;i++)
-		asm("nop"); 
+		asm("nop");
 }
 
 // void main()
@@ -408,7 +401,7 @@ void displayDs1302ReadTime()
 	sprintf(g_glcdBuf, "%s/%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 
 	temp = ds1302_read(ds1302_date_add);
-	sprintf(g_glcdBuf, "%s/%d,", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));	
+	sprintf(g_glcdBuf, "%s/%d,", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
 
 	temp = ds1302_read(ds1302_hr_add);
 	sprintf(g_glcdBuf, "%s%d", g_glcdBuf, (((0xF0&temp)>>4)*10)+(0x0F&temp));
