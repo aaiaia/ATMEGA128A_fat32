@@ -38,4 +38,6 @@
 #define SPI_SD_CARD_SPSR_SET_HIGH_SPEED		(SPSR = (1<<SPI2X))
 #define SPI_ADC_SPSR_SET					(SPSR = (1<<SPI2X))
 
+#define DEVICE_SELECTOR_T_pd	1//us
+
 #endif

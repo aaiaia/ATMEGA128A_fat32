@@ -45,8 +45,6 @@ unsigned char spiReceive()
 	return data;
 }
 
-#define DEVICE_SELECTOR_T_pd	1//us
-
 void spiDeviceHold(unsigned char spiDeviceNumber)
 {
 	SPI_DEVICE_HOLD(SPI_DEVICE_SEL(spiDeviceNumber));
