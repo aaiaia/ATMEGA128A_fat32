@@ -348,49 +348,6 @@ void delay_us(u16 us)
 		asm("nop");
 }
 
-// void main()
-// {
-
-	// unsigned char get_time [7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // array to save the current time
-	// unsigned char cur_time [7] = {0x30, 0x27, 0x14, 0x24, 0x07, 0x05, 0x14}; // seconds, minutes, hours, days, months, weeks, years
-
-	// unsigned char asc[2];
-	// unsigned char line1[11] = {0,0 ,'-', 0,0 ,'-', 0,0, ' ', '\0'}; // display an array of characters on line 1
-	// unsigned char line2[9] = {0,0 ,':', 0,0 ,':', 0,0, '\0'};  // display an array of characters in line 2
-
-
-	// ds1302_set_time(cur_time); //½Ã°£À» ¼¼ÆÃÇØÁÜ.
-	// ds1302_read_time(get_time); //½Ã°£À» ÀÐ¾î¿Â´Ù.
-	
-	// bcd2ascii (get_time[3], asc); // time
-	// line2[0] = asc[0];
-	// line2[1] = asc[1];
-	// bcd2ascii (get_time[4], asc); // min
-	// line2[3] = asc[0];
-	// line2[4] = asc[1];
-	// bcd2ascii (get_time[5], asc); // sec
-	// line2[6] = asc[0];
-	// line2[7] = asc[1];
-   	// bcd2ascii (get_time[0], asc); // for the assignment in line 1
-	// line1[0] = asc[0];
-	// line1[1] = asc[1];
-	// bcd2ascii (get_time[1], asc); // for the assignment on line 1
-	// line1[3] = asc[0];
-	// line1[4] = asc[1];
-	// bcd2ascii (get_time[2], asc); // for the assignment on line 1
-	// line1[6] = asc[0];
-	// line1[7] = asc[1];
-	// bcd2ascii (get_time[6], asc); // line 1 week for the first assignment
-	// line1[9] = asc[1];
-	
-
-	// while(1)
-	// {
-		// ds1302_read_time (set_time[]);
-		// ds1302_display_time(set_time[]);
-	// }
-// }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void displayDs1302ReadTime()
 {
 	unsigned char temp;
@@ -414,3 +371,46 @@ void displayDs1302ReadTime()
 
 	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
 }
+
+/* Test Sample codes */
+// void main()
+// {
+	// unsigned char get_time [7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // array to save the current time
+	// unsigned char cur_time [7] = {0x30, 0x27, 0x14, 0x24, 0x07, 0x05, 0x14}; // seconds, minutes, hours, days, months, weeks, years
+
+	// unsigned char asc[2];
+	// unsigned char line1[11] = {0,0 ,'-', 0,0 ,'-', 0,0, ' ', '\0'}; // display an array of characters on line 1
+	// unsigned char line2[9] = {0,0 ,':', 0,0 ,':', 0,0, '\0'};  // display an array of characters in line 2
+
+
+	// ds1302_set_time(cur_time); //½Ã°£À» ¼¼ÆÃÇØÁÜ.
+	// ds1302_read_time(get_time); //½Ã°£À» ÀÐ¾î¿Â´Ù.
+	
+	// bcd2ascii (get_time[3], asc); // time
+	// line2[0] = asc[0];
+	// line2[1] = asc[1];
+	// bcd2ascii (get_time[4], asc); // min
+	// line2[3] = asc[0];
+	// line2[4] = asc[1];
+	// bcd2ascii (get_time[5], asc); // sec
+	// line2[6] = asc[0];
+	// line2[7] = asc[1];
+	// bcd2ascii (get_time[0], asc); // for the assignment in line 1
+	// line1[0] = asc[0];
+	// line1[1] = asc[1];
+	// bcd2ascii (get_time[1], asc); // for the assignment on line 1
+	// line1[3] = asc[0];
+	// line1[4] = asc[1];
+	// bcd2ascii (get_time[2], asc); // for the assignment on line 1
+	// line1[6] = asc[0];
+	// line1[7] = asc[1];
+	// bcd2ascii (get_time[6], asc); // line 1 week for the first assignment
+	// line1[9] = asc[1];
+	
+
+	// while(1)
+	// {
+		// ds1302_read_time (set_time[]);
+		// ds1302_display_time(set_time[]);
+	// }
+// }
