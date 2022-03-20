@@ -21,7 +21,7 @@
 #define	ADPS2	2//ADC clock frequency setting
 #define	ADPS1	1
 #define	ADPS0	0//2^(XXX), ex) 2^(111) is mean, ADPS register is set ADPS2 = 1, ADPS1=1, ADPS0 = 1
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define ADC_PRESCALER			0x00					//prescaler is 2
 
 #define ADC_PRESCALER_2		(ADC_PRESCALER+1)		//prescaler is 2
@@ -31,7 +31,7 @@
 #define ADC_PRESCALER_32	(ADC_PRESCALER_16+1)	//prescaler is 32
 #define ADC_PRESCALER_64	(ADC_PRESCALER_32+1)	//prescaler is 64
 #define ADC_PRESCALER_128	(ADC_PRESCALER_64+1)	//prescaler is 128
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define F_ADC 				(F_CPU/(1<<ADC_PRESCALER_128))
 const unsigned int ADC_CLOCK_PERIOD = ((int)(1000000UL/F_ADC));//ADC_CLOCK_PERIOD unit is micro seconds.
 /* Using offset value of adc pin number */
@@ -45,6 +45,8 @@ const unsigned int ADC_CLOCK_PERIOD = ((int)(1000000UL/F_ADC));//ADC_CLOCK_PERIO
 #define	MUX_VALUE_OF_ADC5	(MUX_VALUE_OF_ADC+5)
 #define	MUX_VALUE_OF_ADC6	(MUX_VALUE_OF_ADC+6)
 #define	MUX_VALUE_OF_ADC7	(MUX_VALUE_OF_ADC+7)
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+unsigned int getInnerAdcValue(unsigned char adcNumberOffset);
+void initInnerAdcConverter();
 
 #endif

@@ -14,7 +14,7 @@ unsigned int getInnerAdcValue(unsigned char adcNumberOffset)
 
 	return ADC;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void initInnerAdcConverter()
 {
 	ADCSRA =((1<<ADEN)|(1<<ADFR)|ADC_PRESCALER_128);//setting ADC control register.
