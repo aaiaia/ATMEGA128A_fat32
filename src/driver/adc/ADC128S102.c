@@ -1,6 +1,5 @@
 #include "ADC128S102.h"
 
-///////////////////////////// ADC128S //////////////////////////////////
 unsigned char SPI_ADC_Init()
 {
 	SPI_ADC_SPCR_SET;
@@ -13,7 +12,7 @@ unsigned char SPI_ADC_Init()
 	.
 	.
 */
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
 example Codes
 #define ADC_DEFAULT_JUNK_SAMPLING_TIMES
@@ -26,7 +25,7 @@ unsigned int getAdcValue(unsigned char spiDeviceNumber, unsigned char numberOfPo
 		unsigned int samplingTimesTemp = samplingTimes;
 
 		spiDeviceHold(spiDeviceNumber);
-		
+
 		for(junkTimes=junkTimes;junkTimes!=0; junkTimes--)
 		{
 		//ADC dummy Communication, that is two times.
