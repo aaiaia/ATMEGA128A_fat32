@@ -934,11 +934,11 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 	char stringTemp[LONG_NAME_MAXIMUM_LENGTH]={0};
 	char *str;
 	unsigned char i;
-	
-	
+
+
 	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
 	(*searchingSecterInClustor).secterInClustor=0;
-	
+
 	str = (*searchingSecterInClustor).secterData.data;
 
 
@@ -954,7 +954,7 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
 			(*searchingSecterInClustor).secterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
@@ -973,7 +973,7 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
-					
+
 					(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
 				}
 				abstractDirLongNameFromDirectoryEntry(str, stringTemp);
@@ -982,8 +982,8 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 
 
 			strncpy((*physicalDirLocationInfo).dirStructure.dirName.simple, str, DIR_SIMPLE_NAME_MAXIMUM_LENGTH);//general name copy
-			strncpy((*physicalDirLocationInfo).dirStructure.dirName.extension, str+EXTENSION_OFFSET , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy			
-			
+			strncpy((*physicalDirLocationInfo).dirStructure.dirName.extension, str+EXTENSION_OFFSET , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy
+
 			dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
 
 			if( *(str+DIR_LONG_NAME_MARKER_OFFSET) != DIR_LONG_NAME_MARKER )//fullName not exist;
@@ -1031,7 +1031,7 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 			}
 				//reset long name entry info
 				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
-				
+
 				(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
 				(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
 				(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
@@ -1043,7 +1043,7 @@ char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData 
 
 	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
 
-	
+
 	(*physicalDirLocationInfo).dirStructure.otherInfo.indicateFirstClustor = -1;
 	(*physicalDirLocationInfo).dirStructure.otherInfo.indicateFirstClustor |= (-1<<16);
 
@@ -1063,12 +1063,12 @@ char dirInfoConvertToDirectoryEntry(directoryStructure *p, char *dirEntry)
 {
 	strncpy(dirEntry+SIMPLE_NAME_OFFSET, (*p).dirName.simple, DIR_SIMPLE_NAME_MAXIMUM_LENGTH);
 	strncpy(dirEntry+EXTENSION_OFFSET, (*p).dirName.extension, DIR_EXTENSION_MAXUMUM_LENGTH);
-	
+
 	convertZeroToSpace(dirEntry, DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH);
-	
+
 	*(dirEntry+DIR_ATTR_OFFSET) = (*p).otherInfo.attribute;
-	
-	
+
+
 	parsing16BitsToLittleEndian(dirEntry+MSB_FIRST_CLUSTOR_OFFSET, ((*p).otherInfo.indicateFirstClustor>>16));
 	parsing16BitsToLittleEndian(dirEntry+LSB_FIRST_CLUSTOR_OFFSET, (*p).otherInfo.indicateFirstClustor);
 
@@ -1076,9 +1076,9 @@ char dirInfoConvertToDirectoryEntry(directoryStructure *p, char *dirEntry)
 						// sendString("/*make test print*/");
 						// sprintf(g_strBuf.dat, "input file size is:0x%lx", (*p).otherInfo.fileSize);
 						// sendString(g_strBuf.dat);
-						
+
 	parsing32BitsToLittleEndian(dirEntry+DIR_FILESIZE, (*p).otherInfo.fileSize);
-	
+
 	/*Input Dummy Time*/
 	/*Create new dir entry so, creation, write and last access date are same*/
 	/*Input dummy Date end*/
@@ -1125,7 +1125,7 @@ void copyLongDirNameToBlockOfLongNameEntry(unsigned char i, unsigned char limit,
 	{
 		*(dirEntry+i) = 0xFF;
 		*(dirEntry+i+1) = 0xFF;
-		
+
 		i+=LONG_DIR_NAME_ONE_WORD_SIZE;
 	}
 
@@ -1178,7 +1178,7 @@ void longNameConvertToOneDirectoryEntry(directoryAndFileEntryInformation *p, uns
 {
 	memset(dirEntry, 0x00, DIR_DISCRIPTION_LENGTH);
 	char *str = (*p).dirStructure.dirName.fullName+((longNameEntryNumber-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);//fullName pointer moved
-	
+
 	unsigned char lastFlag=0;
 	//long Directroy Number order
 	if(longNameEntryNumber == (*p).entryInfo.extensionNameEntryCount)
@@ -1211,13 +1211,13 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 	char *str;
 	unsigned char longNameEntryNumber = (*p).entryInfo.extensionNameEntryCount;
 	unsigned int entryOffsetBuffer=(*p).entryInfo.entryNumberOrOffset;
-	
+
 	(*searchingSecterInClustor).locatedClustor=(*p).entryInfo.location.clustor;
 	(*searchingSecterInClustor).secterInClustor=(*p).entryInfo.location.secterInClustor;
 
 								// sprintf(g_strBuf.dat, "L.N.E.C:%d ", (*p).entryInfo.extensionNameEntryCount);
 								// sendString(g_strBuf.dat);
-					
+
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
 
 	do
@@ -1228,14 +1228,14 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
 			(*searchingSecterInClustor).secterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
 
 
 		for(str=(*searchingSecterInClustor).secterData.data+entryOffsetBuffer; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
-		{		
+		{
 			if(longNameEntryNumber!=0)
 			{
 				longNameConvertToOneDirectoryEntry(p, longNameEntryNumber, str);
@@ -1252,7 +1252,7 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 
 				timeInfoConvertToDirectoryEntry(str, DIR_CREATION_TIME_OFFSET, &((*p).dirStructure.createDateInfo.time));
 				timeInfoConvertToDirectoryEntry(str, DIR_WRITE_TIME_OFFSET, &((*p).dirStructure.writeDateInfo.time));
-	
+
 				writeSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
 				return 0;
 			}
