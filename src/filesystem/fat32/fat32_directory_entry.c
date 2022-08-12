@@ -409,3 +409,1009 @@ unsigned char generateLongNameCheckSum(char *simple, char *extension)
 	return sum;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char findEmptyDirEntry(fat32Info *diskInfo, clustorData *searchingSecterBuffer, CLUSTOR_LOCATION targetClustor, unsigned char totalOccupiedEntryNumber, entryLocationInfomation *dirEntryInfo)
+{
+	if(totalOccupiedEntryNumber == 0) return -1;
+
+	char *str;
+	unsigned char foundSeriesEntryNumber=0;
+
+	(*searchingSecterBuffer).secterInClustor=0;
+	(*searchingSecterBuffer).locatedClustor=targetClustor;
+
+								// sprintf(g_strBuf.dat, "T.O.E.N:%d ", totalOccupiedEntryNumber);
+								// sendString(g_strBuf.dat);
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+	do
+	{
+		if( !((*searchingSecterBuffer).secterInClustor < ((*diskInfo).secterPerClustor)) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterBuffer).locatedClustor=(*searchingSecterBuffer).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+			(*searchingSecterBuffer).secterInClustor=0;
+		}
+
+
+		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
+
+		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+			if( ((*str) == DIR_DELEDTED) || ((*str) == DIR_EMPTY))
+			{
+				//(*dirEntryInfo).extensionNameEntryCount = 0;//external dir Entry reset.//2015.01.13-1
+				if(foundSeriesEntryNumber == 0)//lastest entry was back up
+				{
+						(*dirEntryInfo).location.clustor=(*searchingSecterBuffer).locatedClustor;
+						(*dirEntryInfo).location.secterInClustor=(*searchingSecterBuffer).secterInClustor;
+
+						(*dirEntryInfo).entryNumberOrOffset=(str-(*searchingSecterBuffer).secterData.data);
+				}
+				foundSeriesEntryNumber++;
+			}
+			else
+			{
+				foundSeriesEntryNumber=0;
+			}
+
+			if(totalOccupiedEntryNumber <= foundSeriesEntryNumber)
+			{
+				//(*dirEntryInfo).extensionNameEntryCount = (totalOccupiedEntryNumber-1);
+				return 0;
+			}
+		}
+		(*searchingSecterBuffer).secterInClustor++;
+	}
+	while( ((*searchingSecterBuffer).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterBuffer).secterInClustor<((*diskInfo).secterPerClustor)) );
+	(*dirEntryInfo).location.clustor = (*searchingSecterBuffer).locatedClustor;
+	(*dirEntryInfo).location.secterInClustor = ((*diskInfo).secterPerClustor-1);
+
+	return -1;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void setTargetLocation(logicalLocationInfomation *p, CLUSTOR_LOCATION clustor, unsigned char secterInClustor)
+{
+	(*p).clustor = clustor;
+	(*p).secterInClustor = secterInClustor;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+to using findTargetFileDirectoryEntryUsingDirectionClustor
+1. set directoryAndFileEntryInformation(that is structure).entryInfo.location.clustor//this value is indicate first clustor will be find.
+2. set directoryAndFileEntryInformation(that is structure).dirStructure.otherInfo.indicateFirstClustor//this value is target value.
+*/
+char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *physicalDirLocationInfo)
+{
+	/////////////////////////////////*using findTargetFileDirectoryEntryUsingDirectionClustor start*/////////////////////////////////
+	//(*findDirEntry).dirStructure.otherInfo.indicateFirstClustor=0x49;/*setting target file located Clustor*/
+	//(*findDirEntry).entryInfo.location.clustor=sdCardInfo.rootClustor;//(*physicalDirLocationInfo).entryInfo.location.clustor
+	//
+	//findDirEntryUsingIndicateClustor(&sdCardInfo, &clustor, findDirEntry);
+/*
+	(*findDirEntry).entryInfo.location.clustor=sdCardInfo.rootClustor;
+	sprintf((*findDirEntry).dirStructure.dirName.fullName, "middleNameSearching");
+	findDirEntryUsingName(&sdCardInfo, &clustor, findDirEntry);
+
+
+
+	resetGlcd();
+	sprintf(g_glcdBuf, "indicate 0x%lx", (*findDirEntry).dirStructure.otherInfo.indicateFirstClustor);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "Entry No 0x%x", (*findDirEntry).entryInfo.entryNumberOrOffset);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "clustor 0x%lx", (*findDirEntry).entryInfo.location.clustor);
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "secterInC. 0d%d", (*findDirEntry).entryInfo.location.secterInClustor);
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "size 0x%lx", (*findDirEntry).dirStructure.otherInfo.fileSize);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "attribute 0x%x", (*findDirEntry).dirStructure.otherInfo.attribute);
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+
+	sprintf(g_glcdBuf ,"%s", stringTemp);
+	putStringInGlcdAtPage(PAGE7, g_glcdBuf);
+																					nextSequence();
+
+*/
+	/////////////////////////////////*using findTargetFileDirectoryEntryUsingDirectionClustor end*/////////////////////////////////
+
+	if( !((*physicalDirLocationInfo).entryInfo.location.secterInClustor < ((*diskInfo).secterPerClustor)) )
+	{
+		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
+	}
+
+	unsigned char count=0;
+	char *str;
+	CLUSTOR_LOCATION abstractFirstClustor = 0;
+
+	if( !((*physicalDirLocationInfo).entryInfo.location.secterInClustor < ((*diskInfo).secterPerClustor)) )
+	{
+		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
+	}
+
+	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
+	(*searchingSecterInClustor).secterInClustor=(*physicalDirLocationInfo).entryInfo.location.secterInClustor;
+
+	//reset long name entry info
+	(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
+
+	do
+	{
+		if( !((*searchingSecterInClustor).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
+			(*searchingSecterInClustor).secterInClustor=0;
+		}
+
+		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
+
+
+		for(str=(*searchingSecterInClustor).secterData.data; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+		/*
+		this function is not work that abstract simple and full name.
+		compare findTargetFileDirectoryEntryUsingName after added code.
+		*/
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))
+			{
+				(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+				(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+				(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+
+				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+				continue;
+			}
+			else if(*(str+DIR_ATTR_OFFSET)==ATTR_LONG_NAME)
+			{
+				if( ( (*(str)) & LONG_NAME_LASTEST_MASK ) == LONG_NAME_LASTEST_VALID_VALUE )//save first long name entry location info.
+				{
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
+
+					(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=((*str)&LONG_NAME_NUMBER_MASK);
+				}
+
+				continue;
+			}
+
+			/*Long Name entry is not filtered??....???!?!?!?*/
+			abstractFirstClustor = abstractLittleEndianTo16Bits(str+LSB_FIRST_CLUSTOR_OFFSET);
+			abstractFirstClustor |= (((unsigned long)abstractLittleEndianTo16Bits(str+MSB_FIRST_CLUSTOR_OFFSET))<<16);
+			if((*physicalDirLocationInfo).dirStructure.otherInfo.indicateFirstClustor==abstractFirstClustor)
+			{
+				/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/
+				(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterInClustor).secterData.data;
+
+				(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterInClustor).locatedClustor;
+				(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+
+				dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
+
+				dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
+				return 0;
+			}
+
+			///////reset longName entry info.
+			(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+			(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+			(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+
+			(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+		}
+
+		(*searchingSecterInClustor).secterInClustor++;
+	}
+
+	while( ((*searchingSecterInClustor).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterInClustor).secterInClustor<((*diskInfo).secterPerClustor)) );
+	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
+
+	//if target is not found, (*physicalDirLocationInfo).entryInfo.location.clustor is indicate lastest clustor is found by this function.
+
+		//reset long name entry info
+		(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+
+		(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+		(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+		(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+	return -1;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char findDirEntryUsingSimpleName(fat32Info *diskInfo, clustorData *searchingSecterBuffer, directoryAndFileEntryInformation *physicalDirLocationInfo)
+{
+	if( *((*physicalDirLocationInfo).dirStructure.dirName.simple)==0) return -1;
+
+	if( !((*physicalDirLocationInfo).entryInfo.location.secterInClustor < ((*diskInfo).secterPerClustor)) )
+	{
+		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
+	}
+
+	unsigned char longNameEntryCount=0;
+
+	unsigned char i;
+	char *str;
+
+	(*searchingSecterBuffer).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
+	(*searchingSecterBuffer).secterInClustor=0;
+
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+	do
+	{
+		if( !((*searchingSecterBuffer).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterBuffer).locatedClustor=(*searchingSecterBuffer).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+			(*searchingSecterBuffer).secterInClustor=0;
+		}
+
+		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
+
+		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))
+			{
+				//reset long name entry info
+				longNameEntryCount=0;
+				continue;
+			}
+			/*In find simple name find, Longname is skipped to fast, but in long name find comparing subfunction increase reserve section in full name when long name is incorrect.*/
+			else if(*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH)!=0)
+			{
+				if((*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH))==1)
+				{
+					//reset long name entry info
+					longNameEntryCount=0;
+				}
+				(*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH))--;
+				continue;
+			}
+			else if( ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ) == ATTRIBUTE_MASK )//encountered long name entry.
+			{
+				if( ( (*(str)) & LONG_NAME_LASTEST_MASK ) == LONG_NAME_LASTEST_VALID_VALUE )//save first long name entry location info.
+				{
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterBuffer).locatedClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterBuffer).secterInClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterBuffer).secterData.data;
+
+					longNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
+
+					*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH)=(*(str)&LONG_NAME_NUMBER_MASK);
+				}
+				continue;
+			}
+
+			for(i=0; i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH; i++)
+			{
+				if(i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH)
+				{
+					if(*(str+i) == *((*physicalDirLocationInfo).dirStructure.dirName.simple+i)) continue;
+					else if( (*((*physicalDirLocationInfo).dirStructure.dirName.simple+i) == 0) && (*(str+i)  == DIR_NAME_EMPTY_DATA) ) continue;
+					break;
+				}
+				else
+				{
+					if(*(str+i) == *((*physicalDirLocationInfo).dirStructure.dirName.extension+i-DIR_SIMPLE_NAME_MAXIMUM_LENGTH)) continue;
+					else if( (*((*physicalDirLocationInfo).dirStructure.dirName.extension+i-DIR_SIMPLE_NAME_MAXIMUM_LENGTH) == 0) && (*(str+i)  == DIR_NAME_EMPTY_DATA) ) continue;
+					break;
+				}
+			}
+
+			if(i==(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH))
+			{
+				/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/
+				dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
+
+				dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
+
+				(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterBuffer).secterData.data;
+
+				(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterBuffer).locatedClustor;
+				(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*searchingSecterBuffer).secterInClustor;
+
+
+				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=longNameEntryCount;
+				return 0;
+			}
+			//reset long name entry info
+			longNameEntryCount=0;
+		}
+		(*searchingSecterBuffer).secterInClustor++;
+	}
+	while( ((*searchingSecterBuffer).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterBuffer).secterInClustor<((*diskInfo).secterPerClustor)) );
+	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
+
+	//if target location is not found, (*physicalDirLocationInfo).entryInfo.location.clustor is indicate that lastest clustor, that is found by this function.
+	(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+	(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+	(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+	return -1;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char notExistSameSimpleName(fat32Info *diskInfo, clustorData *searchingSecterBuffer, CLUSTOR_LOCATION targetClustor, directoryName *dirName)
+{
+	char *stringBuffer = (char*)malloc(sizeof(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH));
+	memset(stringBuffer, DIR_NAME_EMPTY_DATA, sizeof(char)*(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH));
+
+	unsigned char i;
+
+	strncpy(stringBuffer, (*dirName).simple, strlen((*dirName).simple));
+	strncpy(stringBuffer+DIR_SIMPLE_NAME_MAXIMUM_LENGTH, (*dirName).extension, strlen((*dirName).extension));
+
+	char *str;
+	(*searchingSecterBuffer).secterInClustor = 0;
+	(*searchingSecterBuffer).locatedClustor = targetClustor;
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+	do
+	{
+		if( !((*searchingSecterBuffer).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterBuffer).locatedClustor=(*searchingSecterBuffer).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
+
+			(*searchingSecterBuffer).secterInClustor=0;
+		}
+
+
+		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
+
+		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))
+			{
+				continue;
+			}
+			else if(*(str+DIR_ATTR_OFFSET)==ATTR_LONG_NAME)
+			{
+				continue;
+			}
+
+			for(i=0; i<(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH); i++)
+			{
+				if(*(str+i) != *(stringBuffer+i)) break;
+			}
+
+			if(i==(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH)) return -1;
+		}
+		(*searchingSecterBuffer).secterInClustor++;
+	}
+	while( ((*searchingSecterBuffer).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterBuffer).secterInClustor<((*diskInfo).secterPerClustor)) );
+
+
+	free(stringBuffer);
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//*(dirEntry+0x01), *(dirEntry+0x03), *(dirEntry+0x05), *(dirEntry+0x07), *(dirEntry+0x09),  *(dirEntry+0x0e), *(dirEntry+0x10), *(dirEntry+0x12), *(dirEntry+0x14), *(dirEntry+0x16), *(dirEntry+0x18),  *(dirEntry+0x1c), *(dirEntry+0x1e)
+//*(longName+((LONG_NAME_ENTRY_MAXIMUM_NUMBER-(((*dirEntry)&LONG_NAME_NUMBER_MASK)-1))*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY))
+char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
+{
+	// while(start<end)
+	// {
+		// //comparing char is alphabet?
+		// if( (*(*fileName)) != (*(dirEntry+start)) )//until '/0' is same or, end of entry, compare char.
+		// {
+			// if( ((**fileName)) == 0)/* If compared string is end... */
+			// {
+				// if( (*(dirEntry+start) != 0x00) && (*(dirEntry+start) != 0xff) )/* If dir entry is not have empty and end bits. */
+				// {
+										// // sprintf(g_strBuf.dat, "!0x%x", (**fileName));
+										// // sendStringOnly(g_strBuf.dat);
+										// // sendCharOnly('|');
+
+										// // sprintf(g_strBuf.dat, "!0x%x", *(dirEntry+i));
+										// // sendStringOnly(g_strBuf.dat);
+										// // sendCharOnly(':');
+					// return -1;
+				// }
+										// // sprintf(g_strBuf.dat, "0x%x", (**fileName));
+										// // sendStringOnly(g_strBuf.dat);
+										// // sendCharOnly('|');
+
+										// // sprintf(g_strBuf.dat, "0x%x", *(dirEntry+i));
+										// // sendStringOnly(g_strBuf.dat);
+										// // sendCharOnly(':');
+			// }
+			// else
+			// {
+				// return -3;
+			// }
+		// }
+
+						// // sendCharOnly(*(*fileName));
+						// // sendCharOnly('|');
+
+						// // sendCharOnly(*(dirEntry+i));
+						// // sendCharOnly(':');
+		// /* If compared string is end. */
+		// if( ((**fileName)) != 0)
+		// {
+			// (*fileName)++;
+		// }
+		// /*Entry character and file name are same.*/
+		// i+=LONG_DIR_NAME_ONE_WORD_SIZE;
+	// }
+
+	// return 0;
+	while(start<end)
+	{
+		if((*(*fileName))==0)
+		{
+			if(((*start)!=0x00)&&((*start)!=0xFF))	return -1;
+		}
+		else if((*start)!=(*((*fileName))))
+		{
+			return -2;
+		}
+		else
+		{
+			(*fileName)++;
+		}
+		start+=LONG_DIR_NAME_ONE_WORD_SIZE;
+	}
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char compareLongNameStringAndLongNameDirEntry(char* fileName, char *dirEntry)
+{
+	if( ((*dirEntry)&LONG_NAME_LASTEST_MASK) == LONG_NAME_LASTEST_VALID_VALUE )
+	{
+		if( LONG_NAME_ENTRY_MAXIMUM_NUMBER < ((*(dirEntry))&LONG_NAME_NUMBER_MASK) )
+		{
+					// sprintf(g_strBuf.dat, "%d(0x%x) < %d(0x%x) ", LONG_NAME_ENTRY_MAXIMUM_NUMBER, LONG_NAME_ENTRY_MAXIMUM_NUMBER, ((*(dirEntry))&LONG_NAME_NUMBER_MASK), ((*(dirEntry))&LONG_NAME_NUMBER_MASK));
+					// sendStringOnly(g_strBuf.dat);
+					// sendString("long name entry exceed.");
+			return -1;
+		}
+	}
+
+	char *comaparePointer = fileName+((((*dirEntry)&LONG_NAME_NUMBER_MASK)-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);//set longName pointer to compare position along to long name entry number.
+
+	if( compareLongNameAndOneEntry(dirEntry+LONG_DIR_NAME1_OFFSET, dirEntry+LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE, &comaparePointer) )
+	{
+					// sendCharOnly('\n');
+					// sendCharOnly('\r');
+		// *(fileName+LONG_NAME_MAXIMUM_LENGTH) = ((*(dirEntry))&LONG_NAME_NUMBER_MASK);//in full name string, set longname entry number.
+		return 1;
+	}
+	if( compareLongNameAndOneEntry(dirEntry+LONG_DIR_NAME2_OFFSET, dirEntry+LONG_DIR_NAME2_OFFSET+LONG_DIR_NAME2_SIZE, &comaparePointer) )
+	{
+					// sendCharOnly('\n');
+					// sendCharOnly('\r');
+		// *(fileName+LONG_NAME_MAXIMUM_LENGTH) = ((*(dirEntry))&LONG_NAME_NUMBER_MASK);//in full name string, set longname entry number.
+		return 2;
+	}
+	if( compareLongNameAndOneEntry(dirEntry+LONG_DIR_NAME3_OFFSET, dirEntry+LONG_DIR_NAME3_OFFSET+LONG_DIR_NAME3_SIZE, &comaparePointer) )
+	{
+					// sendCharOnly('\n');
+					// sendCharOnly('\r');
+		// *(fileName+LONG_NAME_MAXIMUM_LENGTH) = ((*(dirEntry))&LONG_NAME_NUMBER_MASK);//in full name string, set longname entry number.
+		return 3;
+	}
+					// sendCharOnly('\n');
+					// sendCharOnly('\r');
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *physicalDirLocationInfo)//indicateFirstClustor
+{
+	if(strlen((*physicalDirLocationInfo).dirStructure.dirName.fullName) == 0) return -1;
+	if(!(0<(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount)) return -2;
+	/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+	// unsigned char longNameEntryCount=0;
+
+	char *str;
+	unsigned char i;
+
+	unsigned char passingEntryNumber=0;
+
+	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
+	(*searchingSecterInClustor).secterInClustor=0;
+
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
+	do
+	{
+		if( !((*searchingSecterInClustor).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
+			(*searchingSecterInClustor).secterInClustor=0;
+		}
+
+
+		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
+
+		for(str=(*searchingSecterInClustor).secterData.data; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+					// if((*str!=DIR_DELEDTED)&&(*str!=DIR_EMPTY))//deleted or empty entry
+					// {
+						// sprintf(g_strBuf.dat,
+						// "passingEntryNum=%d, extEntryNum=%d, longEntryNum=%d, ATTR=%x, VLE=%x",
+						// passingEntryNumber, (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount, ((*str)&LONG_NAME_NUMBER_MASK), ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ), ((*str)&LONG_NAME_LASTEST_MASK));
+						// sendString(g_strBuf.dat);
+					// }
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))//deleted or empty entry
+			{
+				//reset long name entry info
+				/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+				//longNameEntryCount=0;
+				// (*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH))=0;
+				passingEntryNumber=0;
+				continue;
+			}
+			/*In find simple name find, Longname is skipped to fast, but in long name find comparing subfunction increase reserve section in full name when long name is incorrect.*/
+			// else if(*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH)!=0)
+			else if(passingEntryNumber!=0)
+			{
+				// (*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH))--;
+				passingEntryNumber--;
+				continue;
+			}
+			else if( ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ) == ATTR_LONG_NAME )//encountered long name entry.
+			{
+						// sendString("Long name entry detected.");
+				if( ( (*(str)) & LONG_NAME_LASTEST_MASK ) == LONG_NAME_LASTEST_VALID_VALUE )//save first long name entry location info.
+				{
+								// sendString("Last long name entry detected.");
+					if( (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount != ( (*(str)) & LONG_NAME_NUMBER_MASK ) )
+					{
+								// sendString("Long name entry and calculated entry num is different.");
+						// longNameEntryCount=0;
+						// *((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH) = ((*str)&LONG_NAME_NUMBER_MASK);//in full name string, set longname entry number.
+						passingEntryNumber=(((*str)&LONG_NAME_NUMBER_MASK));//in full name string, set longname entry number.
+						continue;
+					}
+								// sendString("Long name entry location saved.");
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
+
+					/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+					//longNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
+					/* To compare with simple name, abstract check sum bits and loaded directoryAndFileEntryInformation */
+					(*physicalDirLocationInfo).entryInfo.extensionNameChkSum=*(str+LONG_DIR_CHECK_SUM_OFFSET);
+				}
+
+				if(compareLongNameStringAndLongNameDirEntry((*physicalDirLocationInfo).dirStructure.dirName.fullName, str))
+				{
+							// sendString("Long name entry is different.");
+							// sprintf(g_strBuf.dat ,"%s, ", (*physicalDirLocationInfo).dirStructure.dirName.fullName+(((*str)&LONG_NAME_NUMBER_MASK)-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);
+							// sprintf(g_strBuf.dat, "%s|%c|%c|%c|%c|%c|", g_strBuf.dat, *(str+1), *(str+3), *(str+5), *(str+7), *(str+8));
+					passingEntryNumber=(((*(str))&LONG_NAME_NUMBER_MASK));
+					/*reset long name entry info*/
+					//longNameEntryCount=0;
+				}
+				continue;
+			}
+			// else if(longNameEntryCount==0) continue;
+			else if( *(str+DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~')
+			{
+				continue;
+			}
+
+			/* Alternate below start */
+			dirSimpleNameAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.dirName));
+			/* Alternate above end */
+
+			/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/
+			dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
+
+			dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
+
+			(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterInClustor).secterData.data;
+
+			(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterInClustor).locatedClustor;
+			(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+
+			/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+			//(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=longNameEntryCount;
+
+			return 0;
+		}
+		(*searchingSecterInClustor).secterInClustor++;
+	}
+	while( ((*searchingSecterInClustor).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterInClustor).secterInClustor<((*diskInfo).secterPerClustor)) );
+	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
+	//if target is not found, (*physicalDirLocationInfo).entryInfo.location.clustor is indicate lastest clustor, that is found by this function.
+
+		//reset long name entry info
+		/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+		(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+		(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+		(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+	return -1;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClustor, CLUSTOR_LOCATION targetClustor, directoryName *dirName)
+{
+	/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
+	unsigned char occpiedLongNameEntryNumber;
+	unsigned char i;
+	if((i=strlen((*dirName).fullName)) == 0) return -1;
+
+	occpiedLongNameEntryNumber = (i/LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);
+	if( (i%LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY) != 0)
+	{
+		occpiedLongNameEntryNumber++;
+	}
+
+	unsigned char passingEntryNumber=0;
+
+	char *str;
+
+	(*searchingSecterInClustor).locatedClustor=targetClustor;
+	(*searchingSecterInClustor).secterInClustor=0;
+
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
+
+	do
+	{
+		if( !((*searchingSecterInClustor).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
+			(*searchingSecterInClustor).secterInClustor=0;
+		}
+
+
+		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
+
+		for(str=(*searchingSecterInClustor).secterData.data; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))//deleted or empty entry
+			{
+				passingEntryNumber=0;
+				continue;
+			}
+			else if(passingEntryNumber!=0)
+			{
+				passingEntryNumber--;
+				continue;
+			}
+			else if( ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ) == ATTR_LONG_NAME )//encountered long name entry.
+			{
+				if( ( (*(str)) & LONG_NAME_LASTEST_MASK ) == LONG_NAME_LASTEST_VALID_VALUE )//save first long name entry location info.
+				{
+					if( occpiedLongNameEntryNumber != ( (*(str)) & LONG_NAME_NUMBER_MASK ) )
+					{
+						passingEntryNumber=((*(str)&LONG_NAME_NUMBER_MASK));//in full name string, set longname entry number.
+						continue;
+					}
+				}
+
+				if(compareLongNameStringAndLongNameDirEntry((*dirName).fullName, str))
+				{
+					passingEntryNumber=(((*(str))&LONG_NAME_NUMBER_MASK));
+				}
+				continue;
+			}
+			else if( *(str+DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~')
+			{
+				continue;
+			}
+
+			return -1;
+		}
+		(*searchingSecterInClustor).secterInClustor++;
+	}
+	while( ((*searchingSecterInClustor).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterInClustor).secterInClustor<((*diskInfo).secterPerClustor)) );
+
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*findDirEntryUsingName*//*findDirEntryUsingName*//*findDirEntryUsingName*//*findDirEntryUsingName*//*findDirEntryUsingName*/
+//1 3 5 7 9  e 10 12 14 16 18  1c 1e
+//char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *physicalDirLocationInfo)
+/*
+	When use findDirEntryUsingName(), character is must set by setDirBasicInfomation().
+*/
+/*test Codes*/
+/*
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "dslsd6fg");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "mvdo9q5e4q6rw.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "test123hgf43dsf5002.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "fdjf013.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "keiwkwjerlkdjwier4h60.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "gklduw374924h60.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
+	resultBuffer=254;
+
+	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "test123hgf43dsf5012.txt");
+
+
+																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+
+																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
+																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
+																					nextSequence();
+*/
+char findDirEntryUsingName(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *dirEntryInfo, CLUSTOR_LOCATION locateClustor, char *targetName)//indicateFirstClustor
+{
+	if(setDirBasicInfomation(&(*dirEntryInfo).dirStructure, targetName, 0, 0))
+	{
+		return -1;
+	}
+	setDirLongNameEntryInfomation(dirEntryInfo);
+	setTargetLocation(&((*dirEntryInfo).entryInfo.location), locateClustor, 0);
+
+						// sendString("set basic directory");
+						// sprintf(g_strBuf.dat, "extension Entry count:%d", (*dirEntryInfo).entryInfo.extensionNameEntryCount);
+						// sendString(g_strBuf.dat);
+						// sendStringOnly("TargetName:");
+						// sendString(targetName);
+						// sendDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
+						// sendDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
+						// sendDirectoryAndFileEntryInfomation3(&(fileBrowserData.findEntry));
+
+	if( *((*dirEntryInfo).dirStructure.dirName.simple+DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~')
+	{
+						// sendString("find using simple name.");
+		return findDirEntryUsingSimpleName(diskInfo, searchingSecterInClustor, dirEntryInfo);
+	}
+	else
+	{
+						// sendString("find using long name.");
+		return findDirEntryUsingLongName(diskInfo, searchingSecterInClustor, dirEntryInfo);
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char abstractTargetFileDirectoryEntryUsingName(fat32Info *diskInfo, clustorData *searchingSecterInClustor, directoryAndFileEntryInformation *physicalDirLocationInfo)//indicateFirstClustor
+{
+	if( !((*physicalDirLocationInfo).entryInfo.location.secterInClustor < ((*diskInfo).secterPerClustor)) )
+	{
+		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
+	}
+
+	char stringTemp[LONG_NAME_MAXIMUM_LENGTH]={0};
+	char *str;
+	unsigned char i;
+
+
+	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
+	(*searchingSecterInClustor).secterInClustor=0;
+
+	str = (*searchingSecterInClustor).secterData.data;
+
+
+	//reset long name entry info
+	(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+
+	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
+
+	do
+	{
+		if( !((*searchingSecterInClustor).secterInClustor < (*diskInfo).secterPerClustor) )//finding secter is lastest secter of clustor?
+		{//lastest secter of clustor. loading next clustor
+			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
+			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
+			(*searchingSecterInClustor).secterInClustor=0;
+		}
+
+
+		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
+
+		for(str=(*searchingSecterInClustor).secterData.data; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
+		{
+			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))////empty and delete
+			{
+				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+				continue;
+			}
+			else if( ( (*(str+DIR_ATTR_OFFSET)) & ATTRIBUTE_MASK ) == ATTRIBUTE_MASK )//encountered long name entry.
+			{
+				if( ( (*(str)) & LONG_NAME_LASTEST_MASK ) == LONG_NAME_LASTEST_VALID_VALUE )//save first long name entry location info.
+				{
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
+
+					(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
+				}
+				abstractDirLongNameFromDirectoryEntry(str, stringTemp);
+				continue;
+			}//
+
+
+			strncpy((*physicalDirLocationInfo).dirStructure.dirName.simple, str, DIR_SIMPLE_NAME_MAXIMUM_LENGTH);//general name copy
+			strncpy((*physicalDirLocationInfo).dirStructure.dirName.extension, str+EXTENSION_OFFSET , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy
+
+			dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
+
+			if( *(str+DIR_LONG_NAME_MARKER_OFFSET) != DIR_LONG_NAME_MARKER )//fullName not exist;
+			{
+				for(i=0; i<(sizeof((*physicalDirLocationInfo).dirStructure.dirName.simple)/sizeof(char)); i++)
+				{
+					if(*(str+i)==0x20)
+					{
+						break;
+					}
+				}
+
+				strncpy(stringTemp, (*physicalDirLocationInfo).dirStructure.dirName.simple, i);
+
+				if( ( (*physicalDirLocationInfo).dirStructure.otherInfo.attribute = *(str+DIR_ATTR_OFFSET) ) != ATTR_DIRECTORY)//check '~'....
+				{
+					*(stringTemp+i) = '.';
+					strncpy(stringTemp+i+1, (*physicalDirLocationInfo).dirStructure.dirName.extension, 3);
+					*(stringTemp+i+1+3) = 0x00;
+				}
+				else
+				{
+					*(stringTemp+i) = 0x00;
+				}
+				dirShortNameChangeCapitalToSmalll(stringTemp, strlen(stringTemp));
+			}
+
+			/*encount valid entry*/
+			if(strcmp((*physicalDirLocationInfo).dirStructure.dirName.fullName, stringTemp)==0)
+			{
+
+				/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/
+				dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
+
+				(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterInClustor).secterData.data;
+
+				(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterInClustor).locatedClustor;
+				(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*searchingSecterInClustor).secterInClustor;
+
+				return 0;
+			}
+			else
+			{
+				memset(stringTemp, 0x00, sizeof(stringTemp));
+			}
+				//reset long name entry info
+				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
+
+				(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
+				(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
+				(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
+		}
+		(*physicalDirLocationInfo).entryInfo.location.secterInClustor++;
+
+	}
+	while( ((*searchingSecterInClustor).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterInClustor).secterInClustor<((*diskInfo).secterPerClustor)) );
+
+	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
+
+
+	(*physicalDirLocationInfo).dirStructure.otherInfo.indicateFirstClustor = -1;
+	(*physicalDirLocationInfo).dirStructure.otherInfo.indicateFirstClustor |= (-1<<16);
+
+	(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=-1;
+
+	(*physicalDirLocationInfo).entryInfo.location.clustor=-1;
+	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=-1;
+
+	(*physicalDirLocationInfo).dirStructure.otherInfo.fileSize=-1;
+
+	(*physicalDirLocationInfo).dirStructure.otherInfo.attribute=-1;
+
+	return -1;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
