@@ -61,3 +61,27 @@ void displayFAT32Info(fat32Info *p)
 	putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 	nextSequence();
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void testDirStructurePrint(directoryStructure *p)
+{
+	sprintf(g_glcdBuf, "%s", (*p).dirName.fullName);
+	putStringInGlcdAtPage(PAGE1, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "%s %s", (*p).dirName.simple, (*p).dirName.extension);
+	putStringInGlcdAtPage(PAGE2, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "Attr 0x%02x", (*p).otherInfo.attribute);
+	putStringInGlcdAtPage(PAGE3, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "Indicate First Clustor");
+	putStringInGlcdAtPage(PAGE4, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "0x%000000008lx", (*p).otherInfo.indicateFirstClustor);
+	putStringInGlcdAtPage(PAGE5, g_glcdBuf);
+
+	sprintf(g_glcdBuf, "Size %ld", (*p).otherInfo.fileSize);
+	putStringInGlcdAtPage(PAGE6, g_glcdBuf);
+	putStringInGlcdAtPage(PAGE7, "                       ");
+	putStringInGlcdAtPage(PAGE8, "                       ");
+																					nextSequence();
+}
