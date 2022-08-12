@@ -59,13 +59,13 @@ char findEmptyDirEntry(fat32Info *diskInfo, clustorData *searchingSecterBuffer, 
 
 	char *str;
 	unsigned char foundSeriesEntryNumber=0;
-	
+
 	(*searchingSecterBuffer).secterInClustor=0;
 	(*searchingSecterBuffer).locatedClustor=targetClustor;
 
 								// sprintf(g_strBuf.dat, "T.O.E.N:%d ", totalOccupiedEntryNumber);
 								// sendString(g_strBuf.dat);
-	
+
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
 
 	do
@@ -76,11 +76,11 @@ char findEmptyDirEntry(fat32Info *diskInfo, clustorData *searchingSecterBuffer, 
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
 
 			(*searchingSecterBuffer).secterInClustor=0;
-		}		
-	
-	
+		}
+
+
 		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
-		
+
 		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
 		{
 			if( ((*str) == DIR_DELEDTED) || ((*str) == DIR_EMPTY))
@@ -179,13 +179,13 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 	{
 		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
 	}
-	
+
 	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
 	(*searchingSecterInClustor).secterInClustor=(*physicalDirLocationInfo).entryInfo.location.secterInClustor;
-	
+
 	//reset long name entry info
 	(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
-	
+
 
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
 
@@ -196,11 +196,11 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
 			(*searchingSecterInClustor).secterInClustor=0;
-		}		
+		}
 
 		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
 
-		
+
 		for(str=(*searchingSecterInClustor).secterData.data; str<(*searchingSecterInClustor).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
 		{
 		/*
@@ -212,7 +212,7 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 				(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
 				(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
 				(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
-				
+
 				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
 				continue;
 			}
@@ -223,13 +223,13 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
-					
+
 					(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=((*str)&LONG_NAME_NUMBER_MASK);
 				}
-				
+
 				continue;
 			}
-			
+
 			/*Long Name entry is not filtered??....???!?!?!?*/
 			abstractFirstClustor = abstractLittleEndianTo16Bits(str+LSB_FIRST_CLUSTOR_OFFSET);
 			abstractFirstClustor |= (((unsigned long)abstractLittleEndianTo16Bits(str+MSB_FIRST_CLUSTOR_OFFSET))<<16);
@@ -260,12 +260,12 @@ char findDirEntryUsingIndicateClustor(fat32Info *diskInfo, clustorData *searchin
 
 	while( ((*searchingSecterInClustor).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterInClustor).secterInClustor<((*diskInfo).secterPerClustor)) );
 	(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*diskInfo).secterPerClustor-1;
-	
+
 	//if target is not found, (*physicalDirLocationInfo).entryInfo.location.clustor is indicate lastest clustor is found by this function.
 
 		//reset long name entry info
 		(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=0;
-		
+
 		(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=0;
 		(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=-1;
 		(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=-1;
