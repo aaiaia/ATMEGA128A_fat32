@@ -2109,10 +2109,10 @@ void analogDataDisplay(char *str)
 	unsigned char portNum=0;
 	unsigned char displayPageNumber=5;
 
-	
+
 	sprintf(g_glcdBuf, "Analog %c", *(str+10));
 	putStringInGlcdAtPage(PAGE0+1, g_glcdBuf);
-	
+
 	sprintf(g_glcdBuf, "Time:%c%c:%c%c:%c%c", *(str+0), *(str+1), *(str+2), *(str+3), *(str+4), *(str+5));
 	putStringInGlcdAtPage(PAGE0+2, g_glcdBuf);
 
@@ -2121,11 +2121,11 @@ void analogDataDisplay(char *str)
 		strncpy(strBuffer, str+12+(portNum*ANALOG_DATA_OFFSET), ANALOG_DATA_VALUE_LENGTH);
 		*(strBuffer+ANALOG_DATA_VALUE_LENGTH)=0;
 		sprintf(g_glcdBuf, "PORT%d:%s", portNum+1, strBuffer);
-		
+
 		strncpy(strBuffer, str+12+((portNum+1)*ANALOG_DATA_OFFSET), ANALOG_DATA_VALUE_LENGTH);
 		*(strBuffer+ANALOG_DATA_VALUE_LENGTH)=0;
 		sprintf(g_glcdBuf, "%s,PORT%d:%s", g_glcdBuf, portNum+2, strBuffer);
-		
+
 	putStringInGlcdAtPage(PAGE0+4+(portNum/2), g_glcdBuf);
 	}
 }
@@ -2135,14 +2135,14 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 {
 	unsigned int count=0;
 	char *str;
-	
+
 	if(((*p).dirStructure.otherInfo.indicateFirstClustor == 0)||(*p).dirStructure.otherInfo.fileSize == 0)
 	{
 		putStringInGlcdAtPage(PAGE1, "file is empty.");
 		nextSequence();
 		return -1;
 	}
-	
+
 	/*read file name part start*/
 	if((*p).entryInfo.extensionNameEntryCount!=0)
 	{
@@ -2193,7 +2193,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 			*(g_strBuf.dat+count)=*(str+count);
 
 		}
-		
+
 		*(g_strBuf.dat+count)='.';
 		count++;
 		strncpy(g_strBuf.dat+count, str+DIR_SIMPLE_NAME_MAXIMUM_LENGTH , DIR_EXTENSION_MAXUMUM_LENGTH);//general name copy
@@ -2205,7 +2205,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 	/*if need file name processing, add code this. file name is loaded g_strBuf.dat. start*/
 	putStringInGlcdAtPage(PAGE0+0, g_strBuf.dat);
 	/*if need file name processing, add code this. file name is loaded g_strBuf.dat. end*/
-	
+
 
 	unsigned long readFileSize=0;//This variable is same to file size.
 
@@ -2214,7 +2214,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
 	readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);	
-	
+
 	/*if skipped data is exist, add code this. Data Info length must not exceed 512 bytes.*/
 	str = (*searchingSecterBuffer).secterData.data;
 	count = 0;
@@ -2230,13 +2230,13 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 	str+=count;//pointer move
 	readFileSize=count;
 	count=0;
-	
+
 	/*
 		After data is displaied, pointer is indicating end of buffer. Below is example.
 		<- is pointer location.
 		/cr is carriage return.
 		/nl is line feed.
-		
+
 		before, data infomation not process.
 		[<-DataLogger Finfotech]
 		[Date:2014:01:24]
@@ -2245,7 +2245,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		003289,ADC0,1590,1649,2185,1460,2237,1078,3186,2736/cr/nl
 		003114,ADC1,3946,2231,2881,0270,1833,2415,0535,3946/cr/nl
 		006018,ADC0,1592,1651,2187,1459,2237,1079,3189,2740/cr/nl
-	
+
 		before, display data.
 		[DataLogger Finfotech]
 		[Date:2014:01:24]
@@ -2254,7 +2254,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		003289,ADC0,1590,1649,2185,1460,2237,1078,3186,2736/cr/nl
 		003114,ADC1,3946,2231,2881,0270,1833,2415,0535,3946/cr/nl
 		006018,ADC0,1592,1651,2187,1459,2237,1079,3189,2740/cr/nl
-	
+
 		after 3 line data is displaied.
 		[DataLogger Finfotech]
 		[Date:2014:01:24]
@@ -2264,11 +2264,11 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 		003114,ADC1,3946,2231,2881,0270,1833,2415,0535,3946/cr/nl
 		006018,ADC0,1592,1651,2187,1459,2237,1079,3189,2740/cr/nl
 	*/
-	
+
 	char switchBuffer = '2';
-	
+
 	char *displayPointer;
-	
+
 	do
 	{
 		switch(switchBuffer)
@@ -2276,7 +2276,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 			case '0'://Reverse
 				/* readFileSize is same mean that fileSize. */
 				/* if updated string size is longer then file size not updated at GLCD. */
-				
+
 				/*
 				bufferDirection is in (struct stringBuffer) have any identification values,
 				from identification values MCU know how to calculate buffer string length to read before data.
@@ -2289,9 +2289,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 								  |buffer pointer indicate point is 7(offset) and there is reserved to 0.
 					To calculate string length is buffered in buffer, pointer address minus 1st buffer address(offset 0).
 					And bufferPointer is in structure of [struct stringBuffer].
-					
+
 					if bufferDirection have unicode 'F', bufferPointer indicate lastest buffer location.
-				
+
 				2. case Reverse. ('R')
 					0 1 2 3 4 5 6 7 8 9 10(reserved, it have 0) | 11(invalid memory region)//string length is 8.
 									  |string start(offset 9), offset 10 is reserved to end of array.
@@ -2310,7 +2310,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				{
 					count=(g_strBuf.dat+STRING_BUFFER_SIZE-2)-g_strBuf.loc;
 				}
-				
+
 				// g_strBuf.loc=g_strBuf.dat;
 				/*
 				classify case.
@@ -2322,7 +2322,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 					1-2. perfectly divide, so no rest.
 				2. occur rest.
 				*/
-				
+
 				if((count<readFileSize))/*when data buffer is indicate data.*/
 				{
 					readFileSize-=count;//before data set length
@@ -2333,17 +2333,17 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 						g_strBuf.loc = (g_strBuf.dat+STRING_BUFFER_SIZE-2);//when calculate copied string length, (g_strBuf.dat+STRING_BUFFER_SIZE-2) is reference offset in reserve.
 						g_strBuf.dir='R';
 
-					
+
 						str=((*searchingSecterBuffer).secterData.data+((readFileSize-1)%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter)));//rest
 						(*searchingSecterBuffer).secterInClustor=(((readFileSize-1)/((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter))%(*diskInfo).secterPerClustor);
 						(*searchingSecterBuffer).locatedClustor=findNthClustor(diskInfo, searchingSecterBuffer, (*p).dirStructure.otherInfo.indicateFirstClustor, (readFileSize-1)/(((CLUSTOR_LOCATION)(*diskInfo).secterPerClustor)*((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter)));//return number of sum of clustor - 1
-						
+
 						readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
 						do/*pointer is move back. */
 						{
 							if(str<(*searchingSecterBuffer).secterData.data)
 							{
-							
+
 								if((*searchingSecterBuffer).secterInClustor==0)//wrong??
 								{
 									if((*searchingSecterBuffer).locatedClustor != (*p).dirStructure.otherInfo.indicateFirstClustor)
@@ -2360,9 +2360,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 								{
 									(*searchingSecterBuffer).secterInClustor--;
 								}
-							
+
 								readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
-								
+
 								str=(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE-1;
 							}
 
@@ -2380,9 +2380,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 									str--;
 								}
 							}
-							
-							
-							
+
+
+
 						}
 						while((((*searchingSecterBuffer).locatedClustor!=(*p).dirStructure.otherInfo.indicateFirstClustor)||((*searchingSecterBuffer).secterInClustor!=0))&&(*(g_strBuf.loc)!=0x0a));//direction is reverse.
 
@@ -2391,13 +2391,13 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 						break;
 					}
 				}
-				
+
 				/*when buffer pointer is indicate data info.*/
 				str=(*searchingSecterBuffer).secterData.data+dataFileInfoLength;
 				(*searchingSecterBuffer).locatedClustor=(*p).dirStructure.otherInfo.indicateFirstClustor;
 				(*searchingSecterBuffer).secterInClustor=0;
 				readFileSize=dataFileInfoLength;
-				
+
 			case '2'://Forward
 				/*Read file size is can't exceed file size.*/
 				if((*p).dirStructure.otherInfo.fileSize<=readFileSize) continue;
@@ -2405,13 +2405,13 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				g_strBuf.loc=g_strBuf.dat;
 				g_strBuf.dir='F';
 
-				
+
 				str=(*searchingSecterBuffer).secterData.data+(readFileSize%((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter));//rest
 				(*searchingSecterBuffer).secterInClustor=((readFileSize/((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter))%(*diskInfo).secterPerClustor);
 				(*searchingSecterBuffer).locatedClustor=findNthClustor(diskInfo, searchingSecterBuffer, (*p).dirStructure.otherInfo.indicateFirstClustor, readFileSize/(((CLUSTOR_LOCATION)(*diskInfo).secterPerClustor)*((CLUSTOR_LOCATION)(*diskInfo).bytesPerSecter)));//return number of sum of clustor - 1
 
 				readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);				
-				
+
 
 				do////direction is forward.
 				{
@@ -2427,13 +2427,13 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 							(*searchingSecterBuffer).secterInClustor=0;
 						}
-						
+
 						readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);				
 
 						str=(*searchingSecterBuffer).secterData.data;
 					}
 
-					
+
 					for(;str<(((*searchingSecterBuffer).secterData).data+SD_DATA_BUFFER_SIZE);str++)
 					{
 						*(g_strBuf.loc)=*(str);//copy.
@@ -2449,9 +2449,9 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 				}
 				while((((*searchingSecterBuffer).nextClustor!=CLUSTOR_IS_END)||((*searchingSecterBuffer).secterInClustor<(*diskInfo).secterPerClustor))&&(*(g_strBuf.loc-1)!=0x0a));//direction is forward.
 
-				displayPointer = (g_strBuf.dat);				
+				displayPointer = (g_strBuf.dat);
 				break;
-			
+
 			default:
 				continue;
 		}
@@ -2459,10 +2459,10 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 
 		sprintf(g_glcdBuf, "fileSize:0d%ld", readFileSize);
 		putStringInGlcdAtPage(PAGE4, g_glcdBuf);
-		
+
 		count=0;
 		/*classify data*/
-		
+
 		if(*(displayPointer+7)=='A')
 		{
 			analogDataDisplay(displayPointer);
