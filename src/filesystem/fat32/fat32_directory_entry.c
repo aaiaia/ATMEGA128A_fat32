@@ -1456,7 +1456,7 @@ char dirInfoConvertToDirectoryEntry(directoryStructure *p, char *dirEntry)
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void copyLongDirNameToBlockOfLongNameEntry(unsigned char i, unsigned char limit, unsigned char cmpOffsetCalibe, char *dirEntry, char **longName)
+void copyLongDirNameToBlockOfLongNameEntry(unsigned char i, unsigned char limit, unsigned char cmpOffsetCalibe, char *dirEntry, char **longName)//variable cmpOffsetCalibe is not used
 {
 	if( (*(*longName)) != 0)
 	{
@@ -1490,7 +1490,7 @@ void copyLongDirNameToBlockOfLongNameEntry(unsigned char i, unsigned char limit,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void copyFullNameToLongNameEntry(char *longNameEntry, char *longName)
 {
-	unsigned char cmpOffsetCalibe = LONG_DIR_NAME1_OFFSET;
+	unsigned char cmpOffsetCalibe = LONG_DIR_NAME1_OFFSET;//variable cmpOffsetCalibe is not used
 
 	copyLongDirNameToBlockOfLongNameEntry(LONG_DIR_NAME1_OFFSET, LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE, cmpOffsetCalibe, longNameEntry, &longName);
 	cmpOffsetCalibe += LONG_DIR_NAME2_OFFSET-(LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE);
