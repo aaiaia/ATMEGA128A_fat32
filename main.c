@@ -693,15 +693,15 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 	{
 		occpiedLongNameEntryNumber++;
 	}
-	
+
 	unsigned char passingEntryNumber=0;
-		
+
 	char *str;
 
 	(*searchingSecterInClustor).locatedClustor=targetClustor;
 	(*searchingSecterInClustor).secterInClustor=0;
-	
-	
+
+
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
 
 	do
@@ -711,7 +711,7 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
 			(*searchingSecterInClustor).secterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
@@ -738,7 +738,7 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 						continue;
 					}
 				}
-				
+
 				if(compareLongNameStringAndLongNameDirEntry((*dirName).fullName, str))
 				{
 					passingEntryNumber=(((*(str))&LONG_NAME_NUMBER_MASK));
@@ -768,12 +768,12 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 */
 /*test Codes*/
 /*
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "dslsd6fg");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -783,15 +783,15 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "mvdo9q5e4q6rw.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -801,16 +801,16 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
-																					
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "test123hgf43dsf5002.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -820,16 +820,16 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
-																					
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "fdjf013.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -838,16 +838,16 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					displayDirectoryAndFileEntryInfomation2(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
-																					nextSequence();																					
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+																					nextSequence();
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "keiwkwjerlkdjwier4h60.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -857,15 +857,15 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "gklduw374924h60.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
@@ -875,15 +875,15 @@ char notExistSameLongName(fat32Info *diskInfo, clustorData *searchingSecterInClu
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 																					nextSequence();
-																					
-																					
-																					
-	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));	
+
+
+
+	memset(&(fileBrowserData.findEntry), 0x00, sizeof(directoryAndFileEntryInformation));
 	resultBuffer=254;
 
 	resultBuffer=findDirEntryUsingName(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), sdCardInfo.rootClustor, "test123hgf43dsf5012.txt");
 
-	
+
 																					displayDirectoryAndFileEntryInfomation1(&(fileBrowserData.findEntry));
 																					sprintf(g_glcdBuf ,"result:%d", resultBuffer);
 																					putStringInGlcdAtPage(PAGE8, g_glcdBuf);
