@@ -1283,14 +1283,14 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 													sprintf(g_glcdBuf ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
 												}
 												putStringInGlcdAtPage(PAGE1, g_glcdBuf);
-												
+
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(g_glcdBuf ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(g_glcdBuf ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");
 												}
 												else
 												{
@@ -1298,20 +1298,20 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 												}
 												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-												
+
 												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
 												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
-												
+
 												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
 												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
-												
-												
+
+
 												sprintf(g_glcdBuf ,"%d", resultBuffer);
 												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
 
-																						
-																						
+
+
 
 	resultBuffer=254;
 	resultBuffer=createNewDirEntry(&sdCardInfo, &clustor, &(fileBrowserData.findEntry), (sdCardInfo).rootClustor, ATTR_DIRECTORY, "qpoelf3oe2pkf.txt");
@@ -1328,11 +1328,11 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 												
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(g_glcdBuf ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(g_glcdBuf ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");
 												}
 												else
 												{
@@ -1340,14 +1340,14 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 												}
 												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-												
+
 												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
 												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
-												
+
 												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
 												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
-												
-												
+
+
 												sprintf(g_glcdBuf ,"%d", resultBuffer);
 												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
@@ -1364,14 +1364,14 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 													sprintf(g_glcdBuf ,"%s.%s", fileBrowserData.findEntry.dirStructure.dirName.simple, fileBrowserData.findEntry.dirStructure.dirName.extension);
 												}
 												putStringInGlcdAtPage(PAGE1, g_glcdBuf);
-												
+
 												if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_DIRECTORY)
 												{
-													sprintf(g_glcdBuf ,"Directory");		
+													sprintf(g_glcdBuf ,"Directory");
 												}
 												else if(fileBrowserData.findEntry.dirStructure.otherInfo.attribute == ATTR_ARCHIVE)
 												{
-													sprintf(g_glcdBuf ,"Archive");		
+													sprintf(g_glcdBuf ,"Archive");
 												}
 												else
 												{
@@ -1379,14 +1379,14 @@ char writeDirInfoToDirectoryEntry(fat32Info *diskInfo, clustorData *searchingSec
 												}
 												putStringInGlcdAtPage(PAGE2, g_glcdBuf);
 
-												
+
 												sprintf(g_glcdBuf ,"location 0x%lx", fileBrowserData.findEntry.entryInfo.location.clustor);
 												putStringInGlcdAtPage(PAGE3, g_glcdBuf);
-												
+
 												sprintf(g_glcdBuf ,"indicate 0x%lx", fileBrowserData.findEntry.dirStructure.otherInfo.indicateFirstClustor);
 												putStringInGlcdAtPage(PAGE4, g_glcdBuf);
-												
-												
+
+
 												sprintf(g_glcdBuf ,"%d", resultBuffer);
 												putStringInGlcdAtPage(PAGE8, g_glcdBuf);
 												nextSequence();
