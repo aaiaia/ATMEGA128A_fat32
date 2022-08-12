@@ -389,12 +389,12 @@ char notExistSameSimpleName(fat32Info *diskInfo, clustorData *searchingSecterBuf
 {
 	char *stringBuffer = (char*)malloc(sizeof(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH));
 	memset(stringBuffer, DIR_NAME_EMPTY_DATA, sizeof(char)*(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH));
-	
+
 	unsigned char i;
 
 	strncpy(stringBuffer, (*dirName).simple, strlen((*dirName).simple));
 	strncpy(stringBuffer+DIR_SIMPLE_NAME_MAXIMUM_LENGTH, (*dirName).extension, strlen((*dirName).extension));
-													
+
 	char *str;
 	(*searchingSecterBuffer).secterInClustor = 0;
 	(*searchingSecterBuffer).locatedClustor = targetClustor;
@@ -406,13 +406,13 @@ char notExistSameSimpleName(fat32Info *diskInfo, clustorData *searchingSecterBuf
 		{//lastest secter of clustor. loading next clustor
 			(*searchingSecterBuffer).locatedClustor=(*searchingSecterBuffer).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
-			
+
 			(*searchingSecterBuffer).secterInClustor=0;
 		}
-	
-	
+
+
 		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
-		
+
 		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
 		{
 			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))
@@ -423,18 +423,18 @@ char notExistSameSimpleName(fat32Info *diskInfo, clustorData *searchingSecterBuf
 			{
 				continue;
 			}
-		
+
 			for(i=0; i<(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH); i++)
 			{
 				if(*(str+i) != *(stringBuffer+i)) break;
 			}
-			
+
 			if(i==(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH)) return -1;
 		}
 		(*searchingSecterBuffer).secterInClustor++;
 	}
 	while( ((*searchingSecterBuffer).nextClustor != CLUSTOR_IS_END) || ((*searchingSecterBuffer).secterInClustor<((*diskInfo).secterPerClustor)) );
-	
+
 
 	free(stringBuffer);
 	return 0;
@@ -456,7 +456,7 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 										// // sprintf(g_strBuf.dat, "!0x%x", (**fileName));
 										// // sendStringOnly(g_strBuf.dat);
 										// // sendCharOnly('|');
-										
+
 										// // sprintf(g_strBuf.dat, "!0x%x", *(dirEntry+i));
 										// // sendStringOnly(g_strBuf.dat);
 										// // sendCharOnly(':');
@@ -465,7 +465,7 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 										// // sprintf(g_strBuf.dat, "0x%x", (**fileName));
 										// // sendStringOnly(g_strBuf.dat);
 										// // sendCharOnly('|');
-										
+
 										// // sprintf(g_strBuf.dat, "0x%x", *(dirEntry+i));
 										// // sendStringOnly(g_strBuf.dat);
 										// // sendCharOnly(':');
@@ -478,7 +478,7 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 
 						// // sendCharOnly(*(*fileName));
 						// // sendCharOnly('|');
-						
+
 						// // sendCharOnly(*(dirEntry+i));
 						// // sendCharOnly(':');
 		// /* If compared string is end. */
@@ -489,7 +489,7 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 		// /*Entry character and file name are same.*/
 		// i+=LONG_DIR_NAME_ONE_WORD_SIZE;
 	// }
-	
+
 	// return 0;
 	while(start<end)
 	{
@@ -505,14 +505,13 @@ char compareLongNameAndOneEntry(char *start, char *end, char **fileName)
 		{
 			(*fileName)++;
 		}
-		start+=LONG_DIR_NAME_ONE_WORD_SIZE;		
+		start+=LONG_DIR_NAME_ONE_WORD_SIZE;
 	}
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char compareLongNameStringAndLongNameDirEntry(char* fileName, char *dirEntry)
 {
-	
 	if( ((*dirEntry)&LONG_NAME_LASTEST_MASK) == LONG_NAME_LASTEST_VALID_VALUE )
 	{
 		if( LONG_NAME_ENTRY_MAXIMUM_NUMBER < ((*(dirEntry))&LONG_NAME_NUMBER_MASK) )
@@ -525,7 +524,7 @@ char compareLongNameStringAndLongNameDirEntry(char* fileName, char *dirEntry)
 	}
 
 	char *comaparePointer = fileName+((((*dirEntry)&LONG_NAME_NUMBER_MASK)-1)*LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);//set longName pointer to compare position along to long name entry number.
-	
+
 	if( compareLongNameAndOneEntry(dirEntry+LONG_DIR_NAME1_OFFSET, dirEntry+LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE, &comaparePointer) )
 	{
 					// sendCharOnly('\n');
@@ -558,16 +557,16 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 	if(!(0<(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount)) return -2;
 	/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
 	// unsigned char longNameEntryCount=0;
-		
+
 	char *str;
 	unsigned char i;
-	
+
 	unsigned char passingEntryNumber=0;
-	
+
 	(*searchingSecterInClustor).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
 	(*searchingSecterInClustor).secterInClustor=0;
 
-	
+
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);//if want check wrong fat table, added exception process
 	do
 	{
@@ -576,7 +575,7 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 			(*searchingSecterInClustor).locatedClustor=(*searchingSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor);
 			(*searchingSecterInClustor).secterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, searchingSecterInClustor, (*searchingSecterInClustor).locatedClustor, (*searchingSecterInClustor).secterInClustor);
@@ -625,13 +624,13 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterInClustor).locatedClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterInClustor).secterInClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterInClustor).secterData.data;
-					
+
 					/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
-					//longNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);					
+					//longNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
 					/* To compare with simple name, abstract check sum bits and loaded directoryAndFileEntryInformation */
 					(*physicalDirLocationInfo).entryInfo.extensionNameChkSum=*(str+LONG_DIR_CHECK_SUM_OFFSET);
 				}
-				
+
 				if(compareLongNameStringAndLongNameDirEntry((*physicalDirLocationInfo).dirStructure.dirName.fullName, str))
 				{
 							// sendString("Long name entry is different.");
@@ -648,7 +647,7 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 			{
 				continue;
 			}
-			
+
 			/* Alternate below start */
 			dirSimpleNameAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.dirName));
 			/* Alternate above end */
@@ -657,7 +656,7 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 			dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
 
 			dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
-			
+
 			(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterInClustor).secterData.data;
 
 			(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterInClustor).locatedClustor;
@@ -665,7 +664,7 @@ char findDirEntryUsingLongName(fat32Info *diskInfo, clustorData *searchingSecter
 
 			/*to create new dir entry, do not varing value of (*physicalDirLocationInfo).entryInfo.extensionNameEntryCount.*/
 			//(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=longNameEntryCount;
-			
+
 			return 0;
 		}
 		(*searchingSecterInClustor).secterInClustor++;
