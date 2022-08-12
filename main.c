@@ -1406,8 +1406,8 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 	if( ((attribute&ATTR_DIR_FILE_MASK)!=ATTR_ARCHIVE) && ((attribute&ATTR_DIR_FILE_MASK)!=ATTR_DIRECTORY) )
 	{
 		return 2;
-	}	
-	
+	}
+
 	if(setDirBasicInfomation(&((*p).dirStructure), fileName, attribute, 0))
 	{
 		return 3;
@@ -1461,7 +1461,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 									// sprintf(g_strBuf.dat, "In create af findEmptyDirEntr:%d", (*p).entryInfo.extensionNameEntryCount);
 									// sendString(g_strBuf.dat);
 	//find empty dir entry and write dir entry end//
-	
+
 	//update date & time start
 	updateDateFromDS1302(&((*p).dirStructure.createDateInfo.date));
 	memcpy(&((*p).dirStructure.writeDateInfo.date), &((*p).dirStructure.createDateInfo.date), sizeof(dirDateInfo));
@@ -1470,7 +1470,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 	updateTimeFromDS1302(&((*p).dirStructure.createDateInfo.time));
 	memcpy(&((*p).dirStructure.writeDateInfo.time), &((*p).dirStructure.createDateInfo.time), sizeof(dirTimeInfo));
 	//update date & time end
-	
+
 	//Because directory have indicate clustor, so empty clustor must is allocated. check valid clustor address start//
 	if(((*p).dirStructure.otherInfo.attribute&ATTR_DIR_FILE_MASK) == ATTR_DIRECTORY)//if make dir entry is directory, must make entry directory clustor.
 	{
@@ -1479,7 +1479,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		//if create entry is directory, find empry clustor and write next clustor. start//
 		(*p).dirStructure.otherInfo.indicateFirstClustor=writeNewClustor(diskInfo, bufferSecterInClustor, findEmptyClustor(diskInfo, bufferSecterInClustor, (*p).entryInfo.location.clustor));
 		memset((*bufferSecterInClustor).secterData.data, 0x00, SD_DATA_BUFFER_SIZE);
-	
+
 		for(i=0; i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH; i++)//"." dir name blank set.
 		{
 			*((*bufferSecterInClustor).secterData.data+i) = DIR_NAME_EMPTY_DATA;
@@ -1487,9 +1487,9 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		*((*bufferSecterInClustor).secterData.data) = '.';
 		parsing16BitsToLittleEndian(((*bufferSecterInClustor).secterData.data+MSB_FIRST_CLUSTOR_OFFSET), ((*p).dirStructure.otherInfo.indicateFirstClustor>>16));
 		parsing16BitsToLittleEndian(((*bufferSecterInClustor).secterData.data+LSB_FIRST_CLUSTOR_OFFSET), (*p).dirStructure.otherInfo.indicateFirstClustor);
-		
+
 		*((*bufferSecterInClustor).secterData.data+DIR_ATTR_OFFSET) = ATTR_DIRECTORY;
-		
+
 		/*Input dummy Date start*/
 		// parsing16BitsToLittleEndian((*bufferSecterInClustor).secterData.data+DIR_CREATION_DATE_OFFSET, 0x3C21);
 		// parsing16BitsToLittleEndian((*bufferSecterInClustor).secterData.data+DIR_WRITE_DATE_OFFSET, 0x3C21);
@@ -1502,13 +1502,13 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		dateInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data, DIR_CREATION_DATE_OFFSET, &((*p).dirStructure.createDateInfo.date));
 		dateInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data, DIR_WRITE_DATE_OFFSET, &((*p).dirStructure.writeDateInfo.date));
 		dateInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data, DIR_LAST_ACCESS_DATE_OFFSET, &((*p).dirStructure.lastestAccessDate));
-	
+
 		// parsing16BitsToLittleEndian((*bufferSecterInClustor).secterData.data+
 		// parsing16BitsToLittleEndian((*bufferSecterInClustor).secterData.data+
 		timeInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data, DIR_CREATION_TIME_OFFSET, &((*p).dirStructure.createDateInfo.time));
 		timeInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data, DIR_WRITE_TIME_OFFSET, &((*p).dirStructure.writeDateInfo.time));
 
-		
+
 		for(i=DIR_DISCRIPTION_LENGTH; i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH+DIR_DISCRIPTION_LENGTH; i++)//"." dir name blank set.
 		{
 			*((*bufferSecterInClustor).secterData.data+i) = DIR_NAME_EMPTY_DATA;
@@ -1520,7 +1520,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 			parsing16BitsToLittleEndian(((*bufferSecterInClustor).secterData.data+DIR_DISCRIPTION_LENGTH+MSB_FIRST_CLUSTOR_OFFSET), (firstEntryClustor>>16));
 			parsing16BitsToLittleEndian(((*bufferSecterInClustor).secterData.data+DIR_DISCRIPTION_LENGTH+LSB_FIRST_CLUSTOR_OFFSET), firstEntryClustor);
 		}
-		
+
 		*((*bufferSecterInClustor).secterData.data+DIR_DISCRIPTION_LENGTH+DIR_ATTR_OFFSET) = ATTR_DIRECTORY;
 
 		/*Input dummy Date start*/
@@ -1541,7 +1541,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		timeInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data+DIR_DISCRIPTION_LENGTH, DIR_CREATION_TIME_OFFSET, &((*p).dirStructure.createDateInfo.time));
 		timeInfoConvertToDirectoryEntry((*bufferSecterInClustor).secterData.data+DIR_DISCRIPTION_LENGTH, DIR_WRITE_TIME_OFFSET, &((*p).dirStructure.createDateInfo.time));
 
-		
+
 		writeSecterInClustor(diskInfo, bufferSecterInClustor, (*p).dirStructure.otherInfo.indicateFirstClustor, 0);
 		//if create entry is directory, find empry clustor and write next clustor. end//
 	}
@@ -1555,7 +1555,7 @@ char createNewDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, 
 		(*p).dirStructure.otherInfo.indicateFirstClustor=0;
 	}
 	//check valid clustor address end//
-	
+
 	//Part of writing new dirEntry
 	writeDirInfoToDirectoryEntry(diskInfo, bufferSecterInClustor, p);
 									// sprintf(g_strBuf.dat, "In create af writeDirInfoToDi:%d", (*p).entryInfo.extensionNameEntryCount);
@@ -1578,7 +1578,7 @@ char findDirEntryIfNotCreateNewDirEntry(fat32Info *diskInfo, clustorData *buffer
 	{
 		if((resultBuffer=createNewDirEntry(diskInfo, bufferSecterInClustor, p, targetClustor, attribute, fileName)))
 		{
-			return -1;		
+			return -1;
 		}
 		else
 		{
@@ -1612,7 +1612,7 @@ char findDirEntryIfNotCreateNewDirEntry(fat32Info *diskInfo, clustorData *buffer
 		resultBuffer=findDirEntryUsingName(diskInfo, bufferSecterInClustor, p, targetClustor, (*p).dirStructure.dirName.fullName);
 	}
 	/*check indicate first clustor is zero, and size zero end*/
-	
+
 	return resultBuffer;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1620,12 +1620,12 @@ char deleteDirEntryAtIndicateClustor(fat32Info *diskInfo, clustorData *bufferSec
 {
 	/* not support dir entry have long name implementation */
 	char *str;
-	
+
 	CLUSTOR_LOCATION deletionClustor=locatedEntryClustor;
 	unsigned char deletionSecterInClustor=0;
-	
+
 	CLUSTOR_LOCATION entryIndicateLocation=0;
-	
+
 
 	checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deletionClustor);//if want check wrong fat table, added exception process
 
@@ -1636,7 +1636,7 @@ char deleteDirEntryAtIndicateClustor(fat32Info *diskInfo, clustorData *bufferSec
 			deletionClustor=(*bufferSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deletionClustor);
 			 deletionSecterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, bufferSecterInClustor, deletionClustor,  deletionSecterInClustor);
@@ -1689,16 +1689,16 @@ char deleteDirEntryAtIndicateClustor(fat32Info *diskInfo, clustorData *bufferSec
 				checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deletionClustor);
 				readSecterInClustor(diskInfo, bufferSecterInClustor, deletionClustor,  deletionSecterInClustor);
 			}
-			
+
 			str+=DIR_DISCRIPTION_LENGTH;
 		}
-		
+
 		deletionSecterInClustor++;
 	}
 	while( ((*bufferSecterInClustor).nextClustor != CLUSTOR_IS_END) || ( deletionSecterInClustor<((*diskInfo).secterPerClustor)) );
 
 	deleteClustor(diskInfo, bufferSecterInClustor, locatedEntryClustor);
-	
+
 	// if target is not found, (*physicalDirLocationInfo).entryInfo.location.clustor is indicate lastest clustor, that is found by this function.
 	return 0;
 }
