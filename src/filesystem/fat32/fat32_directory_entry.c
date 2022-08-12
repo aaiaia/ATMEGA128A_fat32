@@ -280,3 +280,132 @@ char setDirLongNameEntryInfomation(directoryAndFileEntryInformation *p)
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char setDirBasicInfomation(directoryStructure *p, char *name, unsigned char attribute, unsigned long fileSize)
+{
+	if(p == 0) return -1;
+//name is long?... or not alphabet?
+//directory? or file?
+//	unsigned char flag=0;//1 is long name. case is long name, long extension and both string is long.
+
+
+	unsigned int nameLength;
+	for(nameLength=0; ((*(name+nameLength)!=0)&&(nameLength<LONG_NAME_MAXIMUM_LENGTH)); nameLength++)
+	{
+		*((*p).dirName.fullName+nameLength)=*(name+nameLength);
+	}
+	*((*p).dirName.fullName+nameLength)=0;
+
+	if(LONG_NAME_MAXIMUM_LENGTH<nameLength) return -2;
+	else if(nameLength == 0) return -1;
+	// else if(attribute == 0) return -3;
+
+
+	unsigned char extensionNameLength = 0;
+	char *extensionNamePointer = name+nameLength;//pointer is indicate last location of string.
+	//unsigned char i;
+
+	if( *((*p).dirName.fullName) != '.' )
+	{
+		//if not input attributes this part make ploblem that string processing, so want to edit name, attribute must have any value that archive or directory.
+		for(extensionNamePointer = (name + nameLength - 1); ((*extensionNamePointer != '.')&&(name<extensionNamePointer)); extensionNamePointer--);//find dot location
+
+		if(extensionNamePointer != name)//exist extension String
+		{
+			//To get full name length, that have dot and extension name, using strlen(name).
+			nameLength = extensionNamePointer - name ;//name Length is minus extension name length
+
+			extensionNamePointer++;//move from '.' to any one word(at gif, to 'g')
+			extensionNameLength = strlen(extensionNamePointer);//set extension string length
+			/* if you have to get full name length after this line, nameLength+1+extensionNameLength is full name length... */
+		}
+	}
+
+	if(nameLength > DIR_SIMPLE_NAME_MAXIMUM_LENGTH)//if name length is exceed over 8 character, created name is long name.
+	{
+		/*simple Name and extension string copy...*/
+		strncpy((*p).dirName.simple, name, DIR_SIMPLE_NAME_MAXIMUM_LENGTH);
+		*((*p).dirName.simple + DIR_SIMPLE_NAME_MAXIMUM_LENGTH) = 0;
+		*((*p).dirName.simple + DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) = '~';
+		*((*p).dirName.simple + DIR_SIMPLE_NAME_MAXIMUM_LENGTH-1) = '1';
+	}
+	else//created name is simple name.
+	{
+		/*simple Name and extension string copy...*/
+		// strcpy((*p).dirName.simple, name, nameLength);
+		strcpy((*p).dirName.simple, name);
+	}
+
+
+	if(extensionNameLength > DIR_EXTENSION_MAXUMUM_LENGTH)//if extemtion length is exceed over 3 character,created name is long name.
+	{
+		strncpy((*p).dirName.extension, extensionNamePointer, DIR_EXTENSION_MAXUMUM_LENGTH);
+		*((*p).dirName.extension+DIR_EXTENSION_MAXUMUM_LENGTH) = 0;
+
+		if( *((*p).dirName.simple+ DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~' )//simple name is not exceed 8 char. But, extension name is exceed 3 character. So. random simple name is need...
+		{
+			createSimpleName((*p).dirName.simple);
+		}
+	}
+	else if(extensionNameLength == 0)
+	{
+		*((*p).dirName.extension)=0;
+	}
+	else
+	{
+		// strncpy((*p).dirName.extension, extensionNamePointer, extensionNameLength);
+		strcpy((*p).dirName.extension, extensionNamePointer);
+	}
+
+//	dirShortNameChangeSmallToCapital((*p).dirName.simple, strlen((*p).dirName.simple));
+//	dirShortNameChangeSmallToCapital((*p).dirName.extension, extensionNameLength);
+	dirShortNameChangeSmallToCapital((*p).dirName.simple, DIR_SIMPLE_NAME_MAXIMUM_LENGTH);
+	dirShortNameChangeSmallToCapital((*p).dirName.extension, DIR_EXTENSION_MAXUMUM_LENGTH);
+
+	(*p).otherInfo.attribute = attribute;/*set attribute*/
+	(*p).otherInfo.fileSize = fileSize;/*set file size*/
+
+	return 0;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*When long Name check-sum can use, simple and extension name are decide.*/
+unsigned char generateLongNameCheckSum(char *simple, char *extension)
+{
+	unsigned char simpleAndExtensionLength=0;
+	unsigned char sum=0;
+
+	simpleAndExtensionLength=(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH);
+
+	while(simpleAndExtensionLength!=3)
+	{
+		if(*simple !=0)
+		{
+			sum=((sum&1)?0x80:0) + (sum>>1) + *simple++;
+			simpleAndExtensionLength--;
+		}
+		else
+		{
+
+			sum=((sum&1)?0x80:0) + (sum>>1) + 0x20;
+			simple++;
+			simpleAndExtensionLength--;
+		}
+	}
+
+	while(simpleAndExtensionLength!=0)
+	{
+		if(*extension !=0)
+		{
+			sum=((sum&1)?0x80:0) + (sum>>1) + *extension++;
+			simpleAndExtensionLength--;
+		}
+		else
+		{
+
+			sum=((sum&1)?0x80:0) + (sum>>1) + 0x20;
+			extension++;
+			simpleAndExtensionLength--;
+		}
+	}
+	return sum;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
