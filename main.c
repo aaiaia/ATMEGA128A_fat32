@@ -280,16 +280,16 @@ char findDirEntryUsingSimpleName(fat32Info *diskInfo, clustorData *searchingSect
 	{
 		(*physicalDirLocationInfo).entryInfo.location.secterInClustor=0;
 	}
-	
+
 	unsigned char longNameEntryCount=0;
-	
+
 	unsigned char i;
 	char *str;
 
 	(*searchingSecterBuffer).locatedClustor=(*physicalDirLocationInfo).entryInfo.location.clustor;
 	(*searchingSecterBuffer).secterInClustor=0;
-	
-		
+
+
 	checkFatAndLocatNextClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor);
 
 	do
@@ -303,7 +303,7 @@ char findDirEntryUsingSimpleName(fat32Info *diskInfo, clustorData *searchingSect
 		}
 
 		readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
-		
+
 		for(str=(*searchingSecterBuffer).secterData.data; str<(*searchingSecterBuffer).secterData.data+SD_DATA_BUFFER_SIZE; str+=DIR_DISCRIPTION_LENGTH)
 		{
 			if((*str==DIR_DELEDTED)||(*str==DIR_EMPTY))
@@ -330,14 +330,14 @@ char findDirEntryUsingSimpleName(fat32Info *diskInfo, clustorData *searchingSect
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.clustor=(*searchingSecterBuffer).locatedClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameLocation.secterInClustor=(*searchingSecterBuffer).secterInClustor;
 					(*physicalDirLocationInfo).entryInfo.longNameEntryOffset=str-(*searchingSecterBuffer).secterData.data;
-					
+
 					longNameEntryCount=(*(str)&LONG_NAME_NUMBER_MASK);
-					
+
 					*((*physicalDirLocationInfo).dirStructure.dirName.fullName+LONG_NAME_MAXIMUM_LENGTH)=(*(str)&LONG_NAME_NUMBER_MASK);
 				}
 				continue;
 			}
-																												
+
 			for(i=0; i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH; i++)
 			{
 				if(i<DIR_SIMPLE_NAME_MAXIMUM_LENGTH)
@@ -353,20 +353,20 @@ char findDirEntryUsingSimpleName(fat32Info *diskInfo, clustorData *searchingSect
 					break;
 				}
 			}
-			
+
 			if(i==(DIR_SIMPLE_NAME_MAXIMUM_LENGTH+DIR_EXTENSION_MAXUMUM_LENGTH))
 			{
-				/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/				
+				/*!!!!if varing lastest access time, added function that abstract lastest access time from dir entry, this location...*/
 				dirOtherInfoAbstractFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure.otherInfo));
 
 				dirDateAndTimeInfoParseFromDirectoryEntry(str, &((*physicalDirLocationInfo).dirStructure));
-				
+
 				(*physicalDirLocationInfo).entryInfo.entryNumberOrOffset=str-(*searchingSecterBuffer).secterData.data;
 
 				(*physicalDirLocationInfo).entryInfo.location.clustor=(*searchingSecterBuffer).locatedClustor;
 				(*physicalDirLocationInfo).entryInfo.location.secterInClustor=(*searchingSecterBuffer).secterInClustor;
 
-				
+
 				(*physicalDirLocationInfo).entryInfo.extensionNameEntryCount=longNameEntryCount;
 				return 0;
 			}
