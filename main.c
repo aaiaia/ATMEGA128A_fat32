@@ -2428,7 +2428,7 @@ char savedDataFileInfoParseFromSectorInClustor(fat32Info *diskInfo, clustorData 
 							(*searchingSecterBuffer).secterInClustor=0;
 						}
 
-						readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);				
+						readSecterInClustor(diskInfo, searchingSecterBuffer, (*searchingSecterBuffer).locatedClustor, (*searchingSecterBuffer).secterInClustor);
 
 						str=(*searchingSecterBuffer).secterData.data;
 					}
