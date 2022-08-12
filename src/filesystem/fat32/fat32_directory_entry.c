@@ -1502,3 +1502,31 @@ void copyFullNameToLongNameEntry(char *longNameEntry, char *longName)
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char findOffsetOfEndOfLongDirName(unsigned char i, unsigned char limit, unsigned char cmpOffsetCalibe, char *dirEntry)
+{
+	while(i<limit)
+	{
+		if( (*(dirEntry+i) == 0xFF) && (*(dirEntry+i+1) == 0xFF) )
+		{
+			return i;
+		}
+
+		i+=LONG_DIR_NAME_ONE_WORD_SIZE;
+	}
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char findOffsetOfEndOfLongNameEntry(char *longNameEntry)
+{
+	unsigned char cmpOffsetCalibe = LONG_DIR_NAME1_OFFSET;
+	char result;
+	if(	(result = findOffsetOfEndOfLongDirName(LONG_DIR_NAME1_OFFSET, LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE, cmpOffsetCalibe, longNameEntry)) ) return result;
+	cmpOffsetCalibe += LONG_DIR_NAME2_OFFSET-(LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE);
+
+	if(	(result = findOffsetOfEndOfLongDirName(LONG_DIR_NAME2_OFFSET, LONG_DIR_NAME2_OFFSET+LONG_DIR_NAME2_SIZE, cmpOffsetCalibe, longNameEntry)) ) return result;
+	cmpOffsetCalibe += LONG_DIR_NAME3_OFFSET-(LONG_DIR_NAME2_OFFSET+LONG_DIR_NAME2_SIZE);
+
+	if(	(result = findOffsetOfEndOfLongDirName(LONG_DIR_NAME3_OFFSET, LONG_DIR_NAME3_OFFSET+LONG_DIR_NAME3_SIZE, cmpOffsetCalibe, longNameEntry)) ) return result;
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
