@@ -1713,12 +1713,12 @@ char deleteDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, CLU
 	{
 		return 2;
 	}
-	
-	
+
+
 	char *str;
 	CLUSTOR_LOCATION entryIndicateLocation=0;
-	
-	
+
+
 	checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor);//if want check wrong fat table, added exception process
 
 	do
@@ -1728,7 +1728,7 @@ char deleteDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, CLU
 			deleteEntryLocatedClustor=(*bufferSecterInClustor).nextClustor;
 			checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor);
 			deleteEntryLocatedSecterInClustor=0;
-		}		
+		}
 
 
 		readSecterInClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor,  deleteEntryLocatedSecterInClustor);
@@ -1760,18 +1760,18 @@ char deleteDirEntry(fat32Info *diskInfo, clustorData *bufferSecterInClustor, CLU
 			}
 			(*str)=DIR_DELEDTED;
 			writeSecterInClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor, deleteEntryLocatedSecterInClustor);
-			
+
 			if((*(str+DIR_ATTR_OFFSET)&ATTR_DIR_FILE_MASK) == ATTR_ARCHIVE)
 			{
 				deleteClustor(diskInfo, bufferSecterInClustor, entryIndicateLocation);//variation file allocation table. already deleted clustor.
-				
+
 				// checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor);
 				// readSecterInClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor, deleteEntryLocatedSecterInClustor);
 			}
 			else if((*(str+DIR_ATTR_OFFSET)&ATTR_DIR_FILE_MASK) == ATTR_DIRECTORY)//deletion of directory is needs check inner dir entry.
 			{
 				deleteDirEntryAtIndicateClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor, entryIndicateLocation);
-				
+
 				// checkFatAndLocatNextClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor);
 				// readSecterInClustor(diskInfo, bufferSecterInClustor, deleteEntryLocatedClustor, deleteEntryLocatedSecterInClustor);
 			}
@@ -1818,7 +1818,7 @@ char findDirEntryAndDeleteUsingName(fat32Info *diskInfo, clustorData *bufferSect
 			resultBuffer=deleteDirEntry(diskInfo, bufferSecterInClustor, (*dirEntryInfo).entryInfo.longNameLocation.clustor, (*dirEntryInfo).entryInfo.longNameLocation.secterInClustor, (*dirEntryInfo).entryInfo.longNameEntryOffset);		
 		}
 	}
-	
+
 	return resultBuffer;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1841,7 +1841,7 @@ void displayDirectoryAndFileEntryInfomation1(directoryAndFileEntryInformation *d
 																					putStringInGlcdAtPage(PAGE5, g_glcdBuf);
 
 																					sprintf(g_glcdBuf, "0x%000000008lx", (*dirEntryInfo).entryInfo.location.clustor);
-																					putStringInGlcdAtPage(PAGE6, g_glcdBuf);																				
+																					putStringInGlcdAtPage(PAGE6, g_glcdBuf);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void displayDirectoryAndFileEntryInfomation2(directoryAndFileEntryInformation *dirEntryInfo)
@@ -1925,11 +1925,11 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 		(*lastestClustorInfo).lastFoundedClustor=writingLocationClustor;
 	}
 
-	
+
 	unsigned long writingLocationSecterInClustor = findFilesLastestLocationInClustor(diskInfo, clustor, (*physicalDirLocationInfo).dirStructure.otherInfo.fileSize)/(*diskInfo).bytesPerSecter;//start number of secter in clustor is 0.
 	char *writingPositionInSdCard = (*clustor).secterData.data;
 
-	
+
 	if( (*diskInfo).secterPerClustor <= writingLocationSecterInClustor)
 	{//file size multiple exception
 		writingPositionInSdCard+=SD_DATA_BUFFER_SIZE;
@@ -1939,7 +1939,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 		writingPositionInSdCard+=(findFilesLastestLocationInClustor(diskInfo, clustor, (*physicalDirLocationInfo).dirStructure.otherInfo.fileSize)%(*diskInfo).bytesPerSecter);//searching and loaded target Clustor.//input charactor location
 	}
 
-																						
+
 //	char *testWritingAddedTailStringPointer = pastedTailString;
 	const unsigned long writingStringOccupiedSizeMain=strlen(pastedString);
 	const unsigned long writingStringOccupiedSizeTail=strlen(pastedTailString);
@@ -1955,7 +1955,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 
 		pastedString+=writingStringOccupiedSizeMain;
 		writingPositionInSdCard+=writingStringOccupiedSizeMain;//have to move sdcardBuffer first.
-		
+
 
 		strncpy(writingPositionInSdCard, pastedTailString, writingStringOccupiedSizeTail);
 		pastedTailString+=writingStringOccupiedSizeTail;
@@ -1985,7 +1985,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 			pastedString+=(((*clustor).secterData.data+SD_DATA_BUFFER_SIZE)-writingPositionInSdCard);
 			writingPositionInSdCard+=(((*clustor).secterData.data+SD_DATA_BUFFER_SIZE)-writingPositionInSdCard);
 		}
-		
+
 		writeSecterInClustor(&sdCardInfo, clustor, writingLocationClustor, writingLocationSecterInClustor);
 		/*because secter is full,so increase loaded sectre in clustor*/
 		writingLocationSecterInClustor++;//writingLocationSecterInClustor have 1, next secter is empty but, it have 2 next clustor is not exist when secter per clustor is 2.
@@ -2030,10 +2030,10 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 								*(writingPositionInSdCard)=0;
 							}
 
-						
+
 						}
 						writingPositionInSdCard++;
-					
+
 					}//escape while loop, when sd card buffer is full or common buffer is ended.
 
 					writeSecterInClustor(diskInfo, clustor, writingLocationClustor, writingLocationSecterInClustor);
@@ -2072,7 +2072,7 @@ char putPasteWritingInFile(fat32Info *diskInfo, clustorData *clustor, directoryA
 
 	/*!!!!if varing lastest access time, added this location...*/
 	writeSdcard(WRITE_BLOCK, &((*clustor).secterData), (*clustor).locatedClustorStartPhysicalSecter+(*clustor).secterInClustor, 512, 1);
-	
+
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
