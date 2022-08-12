@@ -1456,3 +1456,49 @@ char dirInfoConvertToDirectoryEntry(directoryStructure *p, char *dirEntry)
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void copyLongDirNameToBlockOfLongNameEntry(unsigned char i, unsigned char limit, unsigned char cmpOffsetCalibe, char *dirEntry, char **longName)
+{
+	if( (*(*longName)) != 0)
+	{
+		while(i<limit)
+		{
+			if( (*(*longName)) != 0)
+			{
+				*(dirEntry+i) = (*(*longName));
+			}
+			else
+			{
+				*(dirEntry+i) = (*(*longName));
+				i+=LONG_DIR_NAME_ONE_WORD_SIZE;
+				break;
+			}
+			(*longName)++;
+			i+=LONG_DIR_NAME_ONE_WORD_SIZE;
+		}
+	}
+
+	while(i<limit)
+	{
+		*(dirEntry+i) = 0xFF;
+		*(dirEntry+i+1) = 0xFF;
+
+		i+=LONG_DIR_NAME_ONE_WORD_SIZE;
+	}
+
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void copyFullNameToLongNameEntry(char *longNameEntry, char *longName)
+{
+	unsigned char cmpOffsetCalibe = LONG_DIR_NAME1_OFFSET;
+
+	copyLongDirNameToBlockOfLongNameEntry(LONG_DIR_NAME1_OFFSET, LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE, cmpOffsetCalibe, longNameEntry, &longName);
+	cmpOffsetCalibe += LONG_DIR_NAME2_OFFSET-(LONG_DIR_NAME1_OFFSET+LONG_DIR_NAME1_SIZE);
+
+	copyLongDirNameToBlockOfLongNameEntry(LONG_DIR_NAME2_OFFSET, LONG_DIR_NAME2_OFFSET+LONG_DIR_NAME2_SIZE, cmpOffsetCalibe, longNameEntry, &longName);
+	cmpOffsetCalibe += LONG_DIR_NAME3_OFFSET-(LONG_DIR_NAME2_OFFSET+LONG_DIR_NAME2_SIZE);
+
+	copyLongDirNameToBlockOfLongNameEntry(LONG_DIR_NAME3_OFFSET, LONG_DIR_NAME3_OFFSET+LONG_DIR_NAME3_SIZE, cmpOffsetCalibe, longNameEntry, &longName);
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
