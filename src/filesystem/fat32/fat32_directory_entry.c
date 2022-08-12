@@ -264,3 +264,19 @@ char createRandomSimpleName(char *simpleName)//Use when simple name is not excee
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+char setDirLongNameEntryInfomation(directoryAndFileEntryInformation *p)
+{
+	if( *((*p).dirStructure.dirName.simple+DIR_SIMPLE_NAME_MAXIMUM_LENGTH-2) != '~' )
+	{
+		(*p).entryInfo.extensionNameEntryCount=0;
+		return -1;
+	}
+	(*p).entryInfo.extensionNameEntryCount = (strlen((*p).dirStructure.dirName.fullName)/LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY);
+	if( (strlen((*p).dirStructure.dirName.fullName)%LONG_NAME_CHARACTER_NUMBER_IN_A_ENTRY) != 0)
+	{
+		(*p).entryInfo.extensionNameEntryCount++;
+	}
+
+	return 0;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
